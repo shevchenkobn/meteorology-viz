@@ -4,13 +4,10 @@ import ReactDOM from 'react-dom';
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { AppProvider, createAppStore } from './store';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppProvider store={createAppStore()}>
-      <App />
-    </AppProvider>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
