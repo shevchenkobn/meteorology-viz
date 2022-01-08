@@ -2,7 +2,7 @@ import './polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
-import App from './App';
+import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 import { AppProvider, createAppStore } from './store';
 

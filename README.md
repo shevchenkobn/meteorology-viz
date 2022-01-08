@@ -43,6 +43,3 @@ The page consists of 3 parts:
 3. sunburst (circle treemap) chart;
 
 Both views are connected and have two-way data linking. The page is responsive, it will slightly adapt upon changing window size.
-
-## TODO
-- fix double rendering in [`SunburstChart`](src/components/SunburstChart.tsx) after click or after init.
