@@ -1,10 +1,10 @@
 import { parseCsv } from '../lib/data';
 import { Country } from '../models/country';
-import { Observation } from '../models/observation';
+import { Measurement } from '../models/measurement';
 import { Station } from '../models/station';
 import countriesCsv from './country-codes-europe.csv';
 import stationsCsv from './stations-europe.csv';
-import observationsCsv from './temperature-monthly-europe.csv';
+import measurementsCsv from './temperature-monthly-europe.csv';
 
 export function loadCountries() {
   return parseCsv<Country>(countriesCsv);
@@ -19,8 +19,8 @@ export function loadStations() {
   });
 }
 
-export function loadObservations() {
-  return parseCsv<Observation>(observationsCsv, {
+export function loadMeasurements() {
+  return parseCsv<Measurement>(measurementsCsv, {
     parseFieldsAs: {
       int: ['year', 'month', 'observations'],
       float: ['temperature'],

@@ -27,3 +27,11 @@ export function* objectEntries<T extends object>(
     }
   }
 }
+
+export function fromEntries<T = any>(entries: Iterable<readonly [PropertyKey, T]>): { [k: string]: T } {
+  const object: Record<PropertyKey, T> = {};
+  for (const [key, value] of entries) {
+    object[key] = value;
+  }
+  return object;
+}

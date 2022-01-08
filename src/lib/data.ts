@@ -33,3 +33,5 @@ export function parseCsv<T = Record<string, any>>(csvText: string, config?: CsvP
   }
   return parse(csvText, parseConfig);
 }
+
+export const storeLocalStorageKey = '__storeState__';

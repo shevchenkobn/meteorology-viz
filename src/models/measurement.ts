@@ -1,4 +1,4 @@
-export interface Observation {
+export interface Measurement {
   station: string;
   year: number;
   month: number;
