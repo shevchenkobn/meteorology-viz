@@ -2,6 +2,7 @@ import { Action, createStore, Store, ThunkAction } from '@reduxjs/toolkit';
 import { Context, createContext, FunctionComponent, useContext, useEffect, useMemo } from 'react';
 import { createStoreHook, Provider, ReactReduxContextValue } from 'react-redux';
 import { Observable, Subject } from 'rxjs';
+import { MicrotaskSingleton } from '../lib/dom';
 import { Nullable } from '../lib/types';
 import { DeepReadonlyReadState, saveState } from './lib';
 import { AppAction, storeReducer } from './reducers';
@@ -19,30 +20,13 @@ interface AppStateContextValue extends ReactReduxContextValue<DeepReadonlyReadSt
 }
 const context = createContext<AppStateContextValue>(null as any);
 
-class StateSaver {
-  private state: Nullable<DeepReadonlyReadState> = null;
-
-  setState(state: DeepReadonlyReadState) {
-    if (!this.state) {
-      queueMicrotask(() => {
-        if (!this.state) {
-          return;
-        }
-        saveState(this.state);
-        this.state = null;
-      });
-    }
-    this.state = state;
-  }
-}
-
 export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, children }) => {
   const subject = useMemo(() => {
     const subject = new Subject<DeepReadonlyReadState>();
-    const stateSaver = new StateSaver();
+    const stateSaver = new MicrotaskSingleton();
     store.subscribe(() => {
       const state = store.getState();
-      stateSaver.setState(state);
+      stateSaver.setCallback(() => saveState(state));
       if (subject) {
         subject.next(state);
       } else {

@@ -5,8 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import classNames from './App.module.scss';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getContentSize } from './lib/dom';
-import { Point } from './models/common';
+import { getContentSize, Point } from './lib/dom';
 import { GrowingMapPage } from './pages/MapPage';
 import Container from '@mui/material/Container';
 
@@ -17,17 +16,15 @@ export function App() {
     document.title = title;
   }, []);
 
-  const [size, setSize] = useState(getDocumentSize());
+  const [boxSize, setBoxSize] = useState(getDocumentSize());
   const boxRef = useRef<HTMLDivElement>(null);
   const resizeCallback = useCallback(() => {
     if (!boxRef.current || !boxRef.current.parentElement) {
       return;
     }
-    const newSize = getContentSize(boxRef.current.parentElement);
-    setSize({
-      x: newSize.width,
-      y: newSize.height,
-    });
+    const newSize = getContentSize(boxRef.current.parentElement, [boxRef.current, boxRef.current.parentElement]);
+    console.log('container', newSize);
+    setBoxSize(newSize);
   }, []);
   useEffect(() => {
     window.addEventListener('resize', resizeCallback);
@@ -51,11 +48,9 @@ export function App() {
           {/*</Box>*/}
         </Toolbar>
       </AppBar>
-      <Container className={classNames['App-main']} maxWidth={false} style={{ overflow: 'hidden' }}>
-        <Box ref={boxRef} sx={{ my: 2 }} style={{ width: size.x, height: size.y - 24 }}>
-          {/**/}
+      <Container className={classNames['App-main']} maxWidth={false}>
+        <Box ref={boxRef} sx={{ my: 2 }} style={{ width: boxSize.x, height: boxSize.y }}>
           <GrowingMapPage />
-          {/*tes*/}
         </Box>
       </Container>
     </>
