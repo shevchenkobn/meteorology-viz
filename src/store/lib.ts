@@ -1,13 +1,21 @@
-import { Action, AnyAction, AsyncThunkAction, miniSerializeError, Store } from '@reduxjs/toolkit';
-import { iterate } from 'iterare';
+import {
+  Action,
+  AnyAction,
+  AsyncThunkAction,
+  miniSerializeError,
+  Store,
+} from '@reduxjs/toolkit';
 import { deserializeError } from 'serialize-error';
-import { loadCountries, loadMeasurements, loadStations } from '../data';
 import { storeLocalStorageKey } from '../lib/data';
-import { fromEntries } from '../lib/object';
-import { DeepReadonly, Nullable, t } from '../lib/types';
+import { DeepReadonly, Nullable } from '../lib/types';
 import { Country } from '../models/country';
+import {
+  GeoJsonMeasurementFeature,
+  GeoJsonStationFeature,
+} from '../models/geojson';
 import { Measurement } from '../models/measurement';
 import { Station } from '../models/station';
+import { getInitialState } from './actions/init';
 
 export function dispatchWithError<Returned>(
   store: Store<DeepReadonlyReadState>,
@@ -47,30 +55,20 @@ export interface RootState {
     stations: Station[];
     measurements: Measurement[];
   };
-  maps: {
+  mapped: {
     countries: Record<Country['code'], Country['name']>;
     stations: Record<Station['station'], Station>;
+  };
+  geo: {
+    /**
+     * Map of ISO 8601 'yyyy-MM' format (example: 2020-03, 1983-11) to measurement.
+     */
+    timeline: Record<string, GeoJsonMeasurementFeature<Measurement, Station>[]>;
+    stations: GeoJsonStationFeature<Station>[];
   };
 }
 
 export type DeepReadonlyReadState = DeepReadonly<RootState>;
-
-export function getInitialState(): RootState {
-  const countries = loadCountries();
-  const stations = loadStations();
-  const measurements = loadMeasurements();
-  return {
-    raw: {
-      countries: countries.data,
-      stations: stations.data,
-      measurements: measurements.data,
-    },
-    maps: {
-      countries: fromEntries(iterate(countries.data).map((c) => t(c.code, c.name))),
-      stations: fromEntries(iterate(stations.data).map((s) => t(s.station, s))),
-    },
-  };
-}
 
 // export function selectHoveredNodeParentIds(state: RootState) {
 //   return state.data.hoveredNodeParentIds;

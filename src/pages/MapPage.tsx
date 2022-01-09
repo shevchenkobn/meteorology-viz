@@ -85,6 +85,24 @@ function createChart(theme: Theme) {
             ],
           },
         },
+
+        {
+          name: 'center0',
+          value: 20,
+          bind: { name: 'Center longitude (X)', input: 'range', min: -29, max: 69, step: 1 },
+        },
+        {
+          name: 'center1',
+          value: 55,
+          bind: { name: 'Center latitude (Y)', input: 'range', min: 34.6, max: 80, step: 1 },
+          on: [
+            {
+              events: { signal: 'delta' },
+              update: 'clamp(angles[1] + delta[1], -60, 60)',
+            },
+          ],
+        },
+
         {
           name: 'rotate0',
           value: 0,
@@ -158,23 +176,6 @@ function createChart(theme: Theme) {
             {
               events: { signal: 'drag' },
               update: '[drag[0] - start[0], start[1] - drag[1]]',
-            },
-          ],
-        },
-
-        {
-          name: 'center0',
-          value: 20,
-          bind: { name: 'Center longitude (X)', input: 'range', min: -29, max: 69, step: 1 },
-        },
-        {
-          name: 'center1',
-          value: 55,
-          bind: { name: 'Center latitude (Y)', input: 'range', min: 34.6, max: 80, step: 1 },
-          on: [
-            {
-              events: { signal: 'delta' },
-              update: 'clamp(angles[1] + delta[1], -60, 60)',
             },
           ],
         },

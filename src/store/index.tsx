@@ -43,7 +43,7 @@ export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, chi
     });
     return subject;
   }, [store]);
-  const store$ = useMemo(() => {
+  const state$ = useMemo(() => {
     return subject.asObservable();
   }, [subject]);
   useEffect(() => () => subject.complete(), [subject]);
@@ -53,7 +53,7 @@ export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, chi
       <context.Provider
         value={{
           store: store as Store<DeepReadonlyReadState, AppAction>,
-          state$: store$,
+          state$: state$,
           storeState: store.getState(),
         }}
       >

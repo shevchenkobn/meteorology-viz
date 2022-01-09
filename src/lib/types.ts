@@ -11,6 +11,23 @@ export type AsInterface<C> = {
   [K in keyof C]: C[K];
 };
 
+export type NotMaybe<T> = T extends null | undefined ? never : T;
+export function isNotMaybe<T = unknown>(value: T): value is NotMaybe<T> {
+  return value !== undefined && value !== null;
+}
+export function assertNotMaybe<T = unknown>(
+  value: T,
+  message = 'Asserted value is null or undefined!'
+): asserts value is NotMaybe<T> {
+  if (!isNotMaybe(value)) {
+    throw new TypeError(message);
+  }
+}
+export function asNotMaybe<T = unknown>(value: T): NotMaybe<T> {
+  assertNotMaybe(value);
+  return value;
+}
+
 export const asReadonly = Symbol('asReadonly');
 
 export interface ReadonlyMarker<RT> {
@@ -28,6 +45,8 @@ export type DeepReadonly<T> = T extends ReadonlyMarker<infer RT>
   ? T
   : T extends ReadonlyDate
   ? ReadonlyDate
+  : T extends Iterator<infer V>
+  ? Iterator<DeepReadonly<V>>
   : T extends ReadonlyGuardedMap<infer K, infer V>
   ? DeepReadonlyGuardedMap<K, V>
   : T extends ReadonlyMap<infer K, infer V>
@@ -37,6 +56,8 @@ export type DeepReadonly<T> = T extends ReadonlyMarker<infer RT>
   : T extends ReadonlyArray<infer V>
   ? DeepReadonlyArray<V>
   : DeepReadonlyObject<T>;
+// : T extends Iterable<infer V>
+// ? Iterable<DeepReadonly<V>>
 export type DeepReadonlyObject<T> = {
   readonly [P in keyof T]: DeepReadonly<T[P]>;
 };
