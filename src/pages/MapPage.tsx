@@ -52,11 +52,19 @@ function createChart(theme: Theme) {
       height: defaultHeight,
       autosize: 'none',
 
+      config: {
+        background: theme.palette.background.default,
+      },
+
       signals: [
+        { name: 'translate0', update: 'width / 2' },
+        { name: 'translate1', update: 'height / 2' },
+
         {
           name: 'type',
           value: 'stereographic',
           bind: {
+            name: 'Projection',
             input: 'select',
             options: [
               'albers',
@@ -77,18 +85,99 @@ function createChart(theme: Theme) {
             ],
           },
         },
-        { name: 'scale', value: 1200, bind: { input: 'range', min: 50, max: 2000, step: 1 } },
-        { name: 'rotate0', value: 0, bind: { input: 'range', min: -180, max: 180, step: 1 } },
-        { name: 'rotate1', value: 0, bind: { input: 'range', min: -90, max: 90, step: 1 } },
-        { name: 'rotate2', value: 0, bind: { input: 'range', min: -180, max: 180, step: 1 } },
-        { name: 'center0', value: 20, bind: { input: 'range', min: -29, max: 69, step: 1 } },
-        { name: 'center1', value: 55, bind: { input: 'range', min: 34.6, max: 80, step: 1 } },
-        { name: 'translate0', update: 'width / 2' },
-        { name: 'translate1', update: 'height / 2' },
+        {
+          name: 'rotate0',
+          value: 0,
+          bind: { name: 'Rotate 1', input: 'range', min: -180, max: 180, step: 1 },
+          on: [
+            {
+              events: { signal: 'delta' },
+              update: 'angles[0] + delta[0]',
+            },
+          ],
+        },
+        { name: 'rotate1', value: 0, bind: { name: 'Rotate 2', input: 'range', min: -90, max: 90, step: 1 } },
+        { name: 'rotate2', value: 0, bind: { name: 'Rotate 3', input: 'range', min: -180, max: 180, step: 1 } },
 
-        { name: 'graticuleDash', value: 0, bind: { input: 'radio', options: [0, 3, 5, 10] } },
-        { name: 'borderWidth', value: 1, bind: { input: 'text' } },
-        { name: 'background', value: '#ffffff', bind: { input: 'color' } },
+        {
+          name: 'scale',
+          value: 1200,
+          bind: { name: 'Scale', input: 'range', min: 0, max: 10000, step: 1 },
+          on: [
+            {
+              events: { type: 'wheel', consume: true },
+              update: 'clamp(scale * pow(1.002, -event.deltaY * pow(16, event.deltaMode)), 150, 10000)',
+            },
+          ],
+        },
+
+        {
+          name: 'angles',
+          value: [0, 0],
+          on: [
+            {
+              events: 'mousedown',
+              update: '[rotate0, center1]',
+            },
+          ],
+        },
+        {
+          name: 'cloned',
+          value: null,
+          on: [
+            {
+              events: 'mousedown',
+              update: "copy('projection')",
+            },
+          ],
+        },
+        {
+          name: 'start',
+          value: null,
+          on: [
+            {
+              events: 'mousedown',
+              update: 'invert(cloned, xy())',
+            },
+          ],
+        },
+        {
+          name: 'drag',
+          value: null,
+          on: [
+            {
+              events: '[mousedown, window:mouseup] > window:mousemove',
+              update: 'invert(cloned, xy())',
+            },
+          ],
+        },
+        {
+          name: 'delta',
+          value: null,
+          on: [
+            {
+              events: { signal: 'drag' },
+              update: '[drag[0] - start[0], start[1] - drag[1]]',
+            },
+          ],
+        },
+
+        {
+          name: 'center0',
+          value: 20,
+          bind: { name: 'Center longitude (X)', input: 'range', min: -29, max: 69, step: 1 },
+        },
+        {
+          name: 'center1',
+          value: 55,
+          bind: { name: 'Center latitude (Y)', input: 'range', min: 34.6, max: 80, step: 1 },
+          on: [
+            {
+              events: { signal: 'delta' },
+              update: 'clamp(angles[1] + delta[1], -60, 60)',
+            },
+          ],
+        },
       ],
 
       projections: [
@@ -106,14 +195,10 @@ function createChart(theme: Theme) {
         {
           name: 'measurementsPerMonth',
           type: 'linear',
+          domainMin: measurementsPerMonthLimits[0],
+          domainMax: measurementsPerMonthLimits[1],
           domain: measurementsPerMonthLimits,
           range: measurementsRadiusLimits.slice(),
-        },
-        {
-          name: 'measurementsPerMonth_dummyColor',
-          type: 'linear',
-          domain: [31, 31],
-          range: [theme.palette.grey['300'], theme.palette.grey['300']],
         },
         {
           name: 'measurementsPerMonth_dummySize',
@@ -146,7 +231,7 @@ function createChart(theme: Theme) {
           orient: 'top-left',
           title: 'Temperature, °C',
           direction: 'horizontal',
-          gradientStrokeWidth: '1',
+          gradientStrokeWidth: 1,
           gradientStrokeColor: { value: theme.palette.grey['300'] },
         },
         {
@@ -155,7 +240,7 @@ function createChart(theme: Theme) {
           orient: 'top-right',
           title: 'Elevation, m',
           direction: 'horizontal',
-          gradientStrokeWidth: '1',
+          gradientStrokeWidth: 1,
           gradientStrokeColor: { value: theme.palette.grey['300'] },
           // encode: {
           //   labels: {
@@ -170,12 +255,10 @@ function createChart(theme: Theme) {
           title: 'Measurements per month',
           symbolFillColor: { value: theme.palette.secondary.main },
           size: 'measurementsPerMonth_dummySize',
-          tickMinStep: 10,
+          tickMinStep: 5,
           direction: 'horizontal',
           columns: undefined,
           columnPadding: 5,
-          clipHeight: 0,
-          titleOrient: 'top',
           symbolStrokeWidth: 0,
         },
       ],
@@ -247,7 +330,7 @@ function createChart(theme: Theme) {
             {
               type: 'Feature',
               properties: {
-                mag: 2,
+                mag: 10,
                 sig: 25,
               },
               geometry: {
@@ -267,7 +350,7 @@ function createChart(theme: Theme) {
           encode: {
             update: {
               strokeWidth: { value: 1 },
-              strokeDash: { signal: '[+graticuleDash, +graticuleDash]' },
+              strokeDash: { value: 0 },
               stroke: { value: theme.palette.grey['300'] },
               fill: { value: null },
             },
@@ -279,13 +362,13 @@ function createChart(theme: Theme) {
           from: { data: 'world' },
           encode: {
             update: {
-              strokeWidth: { signal: '+borderWidth' },
+              strokeWidth: { value: 1 },
               stroke: { value: theme.palette.primary.main },
               fill: { value: theme.palette.grey.A100 },
               zindex: { value: 0 },
             },
             hover: {
-              strokeWidth: { signal: '+borderWidth + 1' },
+              strokeWidth: { value: 2 },
               stroke: { value: theme.palette.secondary.main },
               zindex: { value: 1 },
             },
