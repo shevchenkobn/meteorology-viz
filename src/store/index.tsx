@@ -2,8 +2,9 @@ import { Action, createStore, Store, ThunkAction } from '@reduxjs/toolkit';
 import { Context, createContext, FunctionComponent, useContext, useEffect, useMemo } from 'react';
 import { createStoreHook, Provider, ReactReduxContextValue } from 'react-redux';
 import { Observable, Subject } from 'rxjs';
-import { MicrotaskSingleton } from '../lib/dom';
-import { Nullable } from '../lib/types';
+import { MacrotaskSingleton } from '../lib/dom';
+import { GuardedMap } from '../lib/map';
+import { DeepReadonly, Nullable } from '../lib/types';
 import { DeepReadonlyReadState, saveState } from './lib';
 import { AppAction, storeReducer } from './reducers';
 
@@ -12,7 +13,16 @@ export type AppDispatch = AppStore['dispatch'];
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, DeepReadonlyReadState, unknown, Action<string>>;
 
 export function createAppStore(): AppStore {
-  return createStore(storeReducer);
+  const store = createStore(storeReducer);
+  // TODO: add unsubscribe logic.
+  const stateSaver = new MacrotaskSingleton();
+  const saveAsync = () => {
+    const state = store.getState();
+    stateSaver.setCallback(() => saveState(state));
+  };
+  store.subscribe(saveAsync);
+  saveAsync();
+  return store;
 }
 
 interface AppStateContextValue extends ReactReduxContextValue<DeepReadonlyReadState, AppAction> {
@@ -23,10 +33,8 @@ const context = createContext<AppStateContextValue>(null as any);
 export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, children }) => {
   const subject = useMemo(() => {
     const subject = new Subject<DeepReadonlyReadState>();
-    const stateSaver = new MicrotaskSingleton();
     store.subscribe(() => {
       const state = store.getState();
-      stateSaver.setCallback(() => saveState(state));
       if (subject) {
         subject.next(state);
       } else {

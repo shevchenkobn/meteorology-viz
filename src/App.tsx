@@ -23,7 +23,6 @@ export function App() {
       return;
     }
     const newSize = getContentSize(boxRef.current.parentElement, [boxRef.current, boxRef.current.parentElement]);
-    console.log('container', newSize);
     setBoxSize(newSize);
   }, []);
   useEffect(() => {

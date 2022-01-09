@@ -10,7 +10,9 @@ export type AppAction = AnyAction;
 export function storeReducer(state: RootState = loadState(), action: AppAction) {
   switch (action.type) {
     default:
-      console.warn(`Unknown action "${action.type}", action object: `, action);
+      if (!action.type.toString().startsWith('@@redux/INIT')) {
+        console.warn(`Unknown action "${action.type}", action object: `, action);
+      }
       return state;
   }
 }

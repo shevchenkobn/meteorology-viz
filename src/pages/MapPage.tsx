@@ -40,7 +40,9 @@ export function MapPage(props: SizeProps) {
 
 export const GrowingMapPage = withGrowingSize(MapPage);
 
+const measurementsRadiusLimits = [4, 7];
 function createChart(theme: Theme) {
+  const measurementsPerMonthLimits = [10, 31];
   return ReactVega.createClassFromSpec({
     mode: 'vega',
     spec: {
@@ -100,6 +102,84 @@ function createChart(theme: Theme) {
         },
       ],
 
+      scales: [
+        {
+          name: 'measurementsPerMonth',
+          type: 'linear',
+          domain: measurementsPerMonthLimits,
+          range: measurementsRadiusLimits.slice(),
+        },
+        {
+          name: 'measurementsPerMonth_dummyColor',
+          type: 'linear',
+          domain: [31, 31],
+          range: [theme.palette.grey['300'], theme.palette.grey['300']],
+        },
+        {
+          name: 'measurementsPerMonth_dummySize',
+          type: 'linear',
+          domainMin: measurementsPerMonthLimits[0],
+          domainMax: measurementsPerMonthLimits[1],
+          domain: measurementsPerMonthLimits,
+          range: measurementsRadiusLimits.map((v) => v * v * Math.PI),
+        },
+        {
+          name: 'elevation',
+          type: 'linear',
+          domain: [0, 500],
+          range: ['#e5f5e0', '#00441b'],
+          clamp: true,
+        },
+        {
+          name: 'temperature',
+          type: 'linear',
+          domain: [-25, 0, 35],
+          range: ['#053061', '#f7f7f7', '#67001f'],
+          clamp: true,
+        },
+      ],
+
+      legends: [
+        {
+          type: 'gradient',
+          fill: 'temperature',
+          orient: 'top-left',
+          title: 'Temperature, °C',
+          direction: 'horizontal',
+          gradientStrokeWidth: '1',
+          gradientStrokeColor: { value: theme.palette.grey['300'] },
+        },
+        {
+          type: 'gradient',
+          fill: 'elevation',
+          orient: 'top-right',
+          title: 'Elevation, m',
+          direction: 'horizontal',
+          gradientStrokeWidth: '1',
+          gradientStrokeColor: { value: theme.palette.grey['300'] },
+          // encode: {
+          //   labels: {
+          //     update: {
+          //     },
+          //   },
+          // },
+        },
+        {
+          type: 'symbol',
+          orient: 'top-left',
+          title: 'Measurements per month',
+          symbolFillColor: { value: theme.palette.secondary.main },
+          size: 'measurementsPerMonth_dummySize',
+          tickMinStep: 10,
+          direction: 'horizontal',
+          columns: undefined,
+          columnPadding: 5,
+          clipHeight: 0,
+          titleOrient: 'top',
+          symbolStrokeWidth: 0,
+        },
+      ],
+
       data: [
         {
           name: 'world',
@@ -112,6 +192,71 @@ function createChart(theme: Theme) {
         {
           name: 'graticule',
           transform: [{ type: 'graticule' }],
+        },
+        {
+          name: 'stations',
+          values: [
+            {
+              type: 'Feature',
+              properties: {
+                mag: 10,
+                sig: 40,
+              },
+              geometry: {
+                type: 'MultiPoint',
+                coordinates: [[35.232845, 49.988358, 26.49]], // Kharkiv
+              },
+              id: 'ci37868143',
+            },
+            {
+              type: 'Feature',
+              properties: {
+                mag: 16,
+                sig: 40,
+              },
+              geometry: {
+                type: 'MultiPoint',
+                coordinates: [[35.732845, 49.988358, 26.49]], // Kharkiv
+              },
+              id: 'ci37868143',
+            },
+            {
+              type: 'Feature',
+              properties: {
+                mag: 31,
+                sig: 40,
+              },
+              geometry: {
+                type: 'MultiPoint',
+                coordinates: [[36.232845, 49.988358, 26.49]], // Kharkiv
+              },
+              id: 'ci37868143',
+            },
+            {
+              type: 'Feature',
+              properties: {
+                mag: 28,
+                sig: 40,
+              },
+              geometry: {
+                type: 'MultiPoint',
+                coordinates: [[36.732845, 49.988358, 26.49]], // Kharkiv
+              },
+              id: 'ci37868143',
+            },
+            {
+              type: 'Feature',
+              properties: {
+                mag: 2,
+                sig: 25,
+              },
+              geometry: {
+                type: 'Point',
+                coordinates: [-0.118092, 51.509865, 26.49], // London
+              },
+              id: 'ci37868144',
+            },
+          ],
         },
       ],
 
@@ -146,6 +291,23 @@ function createChart(theme: Theme) {
             },
           },
           transform: [{ type: 'geoshape', projection: 'projection' }],
+        },
+        {
+          type: 'shape',
+          from: { data: 'stations' },
+          encode: {
+            update: {
+              opacity: { signal: 'datum.properties.sig / 100' },
+              fill: { value: 'red' },
+            },
+          },
+          transform: [
+            {
+              type: 'geoshape',
+              projection: 'projection',
+              pointRadius: { expr: "scale('measurementsPerMonth', datum.properties.mag)" },
+            },
+          ],
         },
       ],
     } as Spec,

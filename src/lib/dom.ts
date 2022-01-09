@@ -31,7 +31,7 @@ export function getContentSize(element: HTMLElement, styleElements: Iterable<HTM
   );
 }
 
-export class MicrotaskSingleton {
+export class MacrotaskSingleton {
   private callback: Nullable<() => void> = null;
 
   setCallback(callback: () => void) {
