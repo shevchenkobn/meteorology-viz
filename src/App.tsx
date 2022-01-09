@@ -3,9 +3,11 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import './App.scss';
-import { useEffect } from 'react';
-import { MapPage } from './pages/MapPage';
+import classNames from './App.module.scss';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { getContentSize } from './lib/dom';
+import { Point } from './models/common';
+import { GrowingMapPage } from './pages/MapPage';
 import Container from '@mui/material/Container';
 
 const title = 'MeteorologyViz';
@@ -13,7 +15,25 @@ const title = 'MeteorologyViz';
 export function App() {
   useEffect(() => {
     document.title = title;
-  });
+  }, []);
+
+  const [size, setSize] = useState(getDocumentSize());
+  const boxRef = useRef<HTMLDivElement>(null);
+  const resizeCallback = useCallback(() => {
+    if (!boxRef.current || !boxRef.current.parentElement) {
+      return;
+    }
+    const newSize = getContentSize(boxRef.current.parentElement);
+    setSize({
+      x: newSize.width,
+      y: newSize.height,
+    });
+  }, []);
+  useEffect(() => {
+    window.addEventListener('resize', resizeCallback);
+    return () => window.removeEventListener('resize', resizeCallback);
+  }, [resizeCallback]);
+  useEffect(resizeCallback, [resizeCallback]);
   return (
     <>
       <CssBaseline />
@@ -31,11 +51,17 @@ export function App() {
           {/*</Box>*/}
         </Toolbar>
       </AppBar>
-      <Container className="App-main" maxWidth={false}>
-        <Box sx={{ my: 2 }}>
-          <MapPage />
+      <Container className={classNames['App-main']} maxWidth={false} style={{ overflow: 'hidden' }}>
+        <Box ref={boxRef} sx={{ my: 2 }} style={{ width: size.x, height: size.y - 24 }}>
+          {/**/}
+          <GrowingMapPage />
+          {/*tes*/}
         </Box>
       </Container>
     </>
   );
+}
+
+function getDocumentSize(): Point {
+  return { x: document.body.offsetWidth, y: document.body.offsetHeight };
 }
