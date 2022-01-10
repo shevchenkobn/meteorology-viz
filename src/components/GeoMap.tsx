@@ -4,13 +4,19 @@ import { useMemo, useRef } from 'react';
 import { View } from 'react-vega';
 import * as ReactVega from 'react-vega';
 import type { Spec } from 'vega';
-import { withGrowingSize } from '../components/with-growing-size';
+import { GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
+import { withGrowSize } from './with-grow-size';
 import topoJsonData from '../data/europe.topo.json';
-import { Nullable } from '../lib/types';
+import { DeepReadonly, DeepReadonlyArray, Nullable } from '../lib/types';
 import { defaultHeight, defaultWidth, SizeProps } from '../models/common';
-import classNames from './MapPage.module.scss';
+import classNames from './GeoMap.module.scss';
 
-export function MapPage(props: SizeProps) {
+export interface GeoMapProps extends DeepReadonly<SizeProps> {
+  readonly stations: DeepReadonlyArray<GeoJsonStationFeature>;
+  readonly measurements: DeepReadonlyArray<GeoJsonMeasurementFeature>;
+}
+
+export function GeoMap(props: GeoMapProps) {
   const theme = useTheme();
   const Chart = useMemo(() => createChart(theme), [theme]);
 
@@ -28,7 +34,7 @@ export function MapPage(props: SizeProps) {
   }
 
   return (
-    <div ref={containerRef} className={classNames.MapPage}>
+    <div ref={containerRef} className={classNames.GeoMap}>
       <Chart
         onNewView={(view) => {
           viewRef.current = view;
@@ -38,7 +44,7 @@ export function MapPage(props: SizeProps) {
   );
 }
 
-export const GrowingMapPage = withGrowingSize(MapPage);
+export const GrowingGeoMap = withGrowSize(GeoMap);
 
 const measurementsRadiusLimits = [4, 7];
 function createChart(theme: Theme) {

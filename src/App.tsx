@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography';
 import classNames from './App.module.scss';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getContentSize, Point } from './lib/dom';
-import { GrowingMapPage } from './pages/MapPage';
 import Container from '@mui/material/Container';
+import { GeoMapPage } from './pages/GeoMapPage';
 
 const title = 'MeteorologyViz';
 
@@ -49,7 +49,7 @@ export function App() {
       </AppBar>
       <Container className={classNames['App-main']} maxWidth={false}>
         <Box ref={boxRef} sx={{ my: 2 }} style={{ width: boxSize.x, height: boxSize.y }}>
-          <GrowingMapPage />
+          <GeoMapPage />
         </Box>
       </Container>
     </>

@@ -3,8 +3,6 @@ import { Context, createContext, FunctionComponent, useContext, useEffect, useMe
 import { createStoreHook, Provider, ReactReduxContextValue } from 'react-redux';
 import { Observable, Subject } from 'rxjs';
 import { MacrotaskSingleton } from '../lib/dom';
-import { GuardedMap } from '../lib/map';
-import { DeepReadonly, Nullable } from '../lib/types';
 import { DeepReadonlyReadState, saveState } from './lib';
 import { AppAction, storeReducer } from './reducers';
 

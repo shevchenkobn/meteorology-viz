@@ -1,8 +1,10 @@
-import { AnyAction } from '@reduxjs/toolkit';
 import { initActionStart } from './actions/init';
+import { SetTimelinePosition } from './actions/set-timeline-position';
 import { loadState, RootState } from './lib';
 
-export type AppAction = AnyAction;
+export type AppAction = SetTimelinePosition;
+
+export type AppCaseReducer<A extends AppAction = AppAction> = (state: RootState, action: A) => RootState;
 
 // export function buildReducers(builder: ActionReducerMapBuilder<RootState>) {
 //

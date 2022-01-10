@@ -43,3 +43,6 @@ The page consists of 3 parts:
 3. sunburst (circle treemap) chart;
 
 Both views are connected and have two-way data linking. The page is responsive, it will slightly adapt upon changing window size.
+
+## FIXES:
+- `"react-error-overlay": "6.0.9"` in `package.json`: https://github.com/facebook/create-react-app/issues/11771;

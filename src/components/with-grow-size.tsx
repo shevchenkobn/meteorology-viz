@@ -4,7 +4,7 @@ import { defaultHeight, defaultWidth, SizeProps } from '../models/common';
 
 type NoSizeProps<T> = Omit<T, keyof SizeProps>;
 
-export function withGrowingSize<P extends PropsWithChildren<SizeProps>>(Component: JSXElementConstructor<P>) {
+export function withGrowSize<P extends PropsWithChildren<SizeProps>>(Component: JSXElementConstructor<P>) {
   return function (props: NoSizeProps<P>) {
     const ref = useRef<HTMLDivElement>(null);
     const [size, setSize] = useState<Point>({ x: defaultWidth, y: defaultHeight });

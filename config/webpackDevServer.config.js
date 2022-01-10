@@ -92,7 +92,7 @@ module.exports = function (proxy, allowedHost) {
     },
     https: getHttpsConfig(),
     host,
-    overlay: false,
+    overlay: true,
     historyApiFallback: {
       // Paths with dots should still use the history fallback.
       // See https://github.com/facebook/create-react-app/issues/387.

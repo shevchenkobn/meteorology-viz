@@ -39,6 +39,7 @@ export interface ReadonlyMarker<RT> {
   [asReadonly]: RT;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type DeepReadonly<T> = T extends ReadonlyMarker<infer RT>
   ? T[typeof asReadonly]
   : T extends Decimal
@@ -80,11 +81,13 @@ export interface PartialMarker<P> {
   [asPartial]: P;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type DeepPartial<T> = T extends PartialMarker<infer PT>
   ? T[typeof asPartial]
   : T extends Decimal
   ? T
-  : T extends GuardedMap<infer K, infer V>
+  : // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  T extends GuardedMap<infer K, infer V>
   ? T
   : T extends Map<infer K, infer V>
   ? Map<DeepPartial<K>, DeepPartial<V>>
@@ -113,8 +116,9 @@ export function as<T>(value: any): value is T {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export function cast<T>(value: any): asserts value is T {}
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function assertUnreachable(x: never): never {
-  throw new Error("Unreachable code, it won't be thrown");
+  throw new Error("Unreachable code, it won't be thrown.");
 }
 
 export type With<K extends keyof any, T = any> = T extends Record<K, infer V> ? Record<K, V> & T : never;

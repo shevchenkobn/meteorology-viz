@@ -12,6 +12,12 @@ export function getMeasurementId(measurement: DeepReadonly<Measurement>) {
   return `${measurement.station}_${getDate(measurement)}`;
 }
 
-export function getDate(measurement: DeepReadonly<Measurement>) {
+/**
+ * Measurement date in ISO 8601 'yyyy-MM' format (example: 2020-03, 1983-11).
+ * It can be compared without casting it to the Date.
+ */
+export type MeasurementDate = `${number}-${number}`;
+
+export function getDate(measurement: DeepReadonly<Measurement>): MeasurementDate {
   return `${measurement.year}-${measurement.month}`;
 }

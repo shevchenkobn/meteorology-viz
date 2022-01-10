@@ -1,4 +1,4 @@
-import { iterate, zip } from 'iterare';
+import { iterate } from 'iterare';
 import { loadCountries, loadMeasurements, loadStations } from '../../data';
 import { fromEntries } from '../../lib/object';
 import { asNotMaybe, t } from '../../lib/types';
@@ -6,10 +6,9 @@ import {
   GeoJsonMeasurementFeature,
   toGeoJsonMeasurementFeatures,
   toGeoJsonStationFeature,
-} from '../../models/geojson';
-import { getDate, Measurement } from '../../models/measurement';
-import { Station } from '../../models/station';
-import { RootState } from '../lib';
+} from '../../models/geo-json';
+import { getDate, MeasurementDate } from '../../models/measurement';
+import { GeoState, RootState } from '../lib';
 
 export const initActionStart = '@@redux/INIT';
 
@@ -20,7 +19,8 @@ export function getInitialState(): RootState {
 
   const stationMap = fromEntries(iterate(stations.data).map((s) => t(s.station, s)));
 
-  const timeline: RootState['geo']['timeline'] = {};
+  const measurementsByDate: GeoState['measurementsByDate'] = {};
+  let minDate: MeasurementDate = '9999-12';
   for (const feature of toGeoJsonMeasurementFeatures(
     iterate(measurements.data)
       .map((m) => ({
@@ -31,12 +31,15 @@ export function getInitialState(): RootState {
   )) {
     const m = feature.properties.measurement;
     const date = getDate(m);
-    let measurements: GeoJsonMeasurementFeature<Measurement, Station>[];
-    if (!(date in timeline)) {
+    if (date < minDate) {
+      minDate = date;
+    }
+    let measurements: GeoJsonMeasurementFeature[];
+    if (!(date in measurementsByDate)) {
       measurements = [];
-      timeline[date] = measurements;
+      measurementsByDate[date] = measurements;
     } else {
-      measurements = timeline[date];
+      measurements = measurementsByDate[date];
     }
     measurements.push(feature);
   }
@@ -52,8 +55,13 @@ export function getInitialState(): RootState {
       stations: stationMap,
     },
     geo: {
-      timeline,
+      measurementsByDate: measurementsByDate,
       stations: stations.data.map((s) => toGeoJsonStationFeature(s)),
+    },
+    geoTimeline: {
+      isPlaying: false,
+      currentPosition: minDate,
+      stepIntervalMs: 500,
     },
   };
 }
