@@ -1,12 +1,12 @@
 $vega-bind-spacing: 0.5rem;
 
 .GeoMap {
-  :global(.vega-bindings) {
+  .vega-bindings {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 
-    > :global(.vega-bind) {
+    > .vega-bind {
       &:not(:first-child) {
         margin-left: $vega-bind-spacing;
       }

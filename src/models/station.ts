@@ -1,4 +1,7 @@
 export interface Station {
+  /**
+   * Station ID.
+   */
   station: string;
   latitude: number;
   longitude: number;

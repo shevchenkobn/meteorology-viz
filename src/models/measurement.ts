@@ -1,6 +1,11 @@
 import { DeepReadonly } from '../lib/types';
 
-export interface Measurement {
+export interface MeasurementDateObject {
+  year: number;
+  month: number;
+}
+
+export interface Measurement extends MeasurementDateObject {
   station: string;
   year: number;
   month: number;
@@ -18,6 +23,16 @@ export function getMeasurementId(measurement: DeepReadonly<Measurement>) {
  */
 export type MeasurementDate = `${number}-${number}`;
 
-export function getDate(measurement: DeepReadonly<Measurement>): MeasurementDate {
-  return `${measurement.year}-${measurement.month}`;
+export function getDate(measurement: DeepReadonly<MeasurementDateObject>): MeasurementDate {
+  return `${measurement.year.toString().padStart(4, '0')}-${measurement.month
+    .toString()
+    .padStart(2, '0')}` as MeasurementDate;
+}
+
+export function parseMeasurementDate(date: MeasurementDate): MeasurementDateObject {
+  const parts = date.split('-');
+  return {
+    year: Number(parts[0]),
+    month: Number(parts[1]),
+  };
 }

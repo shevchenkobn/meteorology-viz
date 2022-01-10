@@ -21,6 +21,7 @@ export function getInitialState(): RootState {
 
   const measurementsByDate: GeoState['measurementsByDate'] = {};
   let minDate: MeasurementDate = '9999-12';
+  let maxDate: MeasurementDate = '0000-01';
   for (const feature of toGeoJsonMeasurementFeatures(
     iterate(measurements.data)
       .map((m) => ({
@@ -33,6 +34,9 @@ export function getInitialState(): RootState {
     const date = getDate(m);
     if (date < minDate) {
       minDate = date;
+    }
+    if (date > maxDate) {
+      maxDate = date;
     }
     let measurements: GeoJsonMeasurementFeature[];
     if (!(date in measurementsByDate)) {
@@ -49,6 +53,10 @@ export function getInitialState(): RootState {
       countries: countries.data,
       stations: stations.data,
       measurements: measurements.data,
+    },
+    measurementLimits: {
+      min: minDate,
+      max: maxDate,
     },
     mapped: {
       countries: fromEntries(iterate(countries.data).map((c) => t(c.code, c.name))),

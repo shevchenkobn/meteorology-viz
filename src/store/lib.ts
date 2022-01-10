@@ -1,7 +1,7 @@
 import { Action, AnyAction, AsyncThunkAction, miniSerializeError, Store } from '@reduxjs/toolkit';
 import { deserializeError } from 'serialize-error';
 import { storeLocalStorageKey } from '../lib/data';
-import { DeepReadonly, Nullable } from '../lib/types';
+import { DeepReadonly } from '../lib/types';
 import { Country } from '../models/country';
 import { GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
 import { Measurement, MeasurementDate } from '../models/measurement';
@@ -22,6 +22,10 @@ export interface RootState {
     stations: Station[];
     measurements: Measurement[];
   };
+  measurementLimits: {
+    min: MeasurementDate;
+    max: MeasurementDate;
+  };
   mapped: {
     countries: Record<Country['code'], Country['name']>;
     stations: Record<Station['station'], Station>;
@@ -34,9 +38,9 @@ export interface RootState {
   };
 }
 
-export type DeepReadonlyReadState = DeepReadonly<RootState>;
+export type DeepReadonlyRootState = DeepReadonly<RootState>;
 
-export function selectGeoData(state: DeepReadonlyReadState) {
+export function selectGeoData(state: DeepReadonlyRootState) {
   return state.geo;
 }
 
@@ -44,19 +48,34 @@ export function areGeoDataShallowEqual(oldData: DeepReadonly<GeoState>, newData:
   return oldData.stations === newData.stations && oldData.measurementsByDate === newData.measurementsByDate;
 }
 
-export function selectGeoTimelinePosition(state: DeepReadonlyReadState) {
+export function selectGeoTimelinePosition(state: DeepReadonlyRootState) {
   return state.geoTimeline.currentPosition;
 }
 
-export function loadState() {
-  let state: Nullable<RootState> = null;
-  try {
-    state = JSON.parse(localStorage.getItem(storeLocalStorageKey) ?? 'null');
-  } catch {}
-  return state ?? getInitialState();
+export function selectMeasurementsLimits(state: DeepReadonlyRootState) {
+  return state.measurementLimits;
 }
 
-export function saveState(state: DeepReadonlyReadState) {
+export function loadState() {
+  // return loadSavedState() ?? getInitialState();
+  return getInitialState();
+}
+
+export function loadSavedState() {
+  try {
+    return JSON.parse(localStorage.getItem(storeLocalStorageKey) ?? 'null');
+  } catch {
+    return null;
+  }
+}
+
+(window as Record<string, any>).appLoadSavedState = loadSavedState;
+
+export function hasSavedState() {
+  return !!localStorage.getItem(storeLocalStorageKey);
+}
+
+export function saveState(state: DeepReadonlyRootState) {
   localStorage.setItem(storeLocalStorageKey, JSON.stringify(state));
 }
 
@@ -67,7 +86,7 @@ export function deleteSavedState() {
 (window as Record<string, any>).appDeleteSavedState = deleteSavedState;
 
 export function dispatchWithError<Returned>(
-  store: Store<DeepReadonlyReadState>,
+  store: Store<DeepReadonlyRootState>,
   action: AsyncThunkAction<Returned, any, Record<string, any>>
 ): Promise<Returned> {
   return store.dispatch(action as any).then((action: AnyAction) => {

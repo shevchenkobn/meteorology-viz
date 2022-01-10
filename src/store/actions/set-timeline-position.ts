@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { MeasurementDate } from '../../models/measurement';
-import { ActionType } from '../lib';
+import { ActionType, selectMeasurementsLimits } from '../lib';
 import type { AppCaseReducer } from '../reducers';
 
 export interface TimelinePosition {
@@ -9,10 +9,13 @@ export interface TimelinePosition {
 
 export type SetTimelinePosition = ReturnType<typeof setTimelinePosition>;
 
-export const setTimelinePosition = createAction<TimelinePosition>(ActionType.SetTimelinePosition);
+export const setTimelinePosition = createAction<TimelinePosition, ActionType.SetTimelinePosition>(
+  ActionType.SetTimelinePosition
+);
 
-export const caseReducer: AppCaseReducer<SetTimelinePosition> = (state, { payload }) => {
-  if (!(payload.timelinePosition in state.geo.measurementsByDate)) {
+export const setTimelinePositionCaseReducer: AppCaseReducer<SetTimelinePosition> = (state, { payload }) => {
+  const limits = selectMeasurementsLimits(state);
+  if (payload.timelinePosition < limits.min || payload.timelinePosition > limits.max) {
     throw new TypeError(`Measurement date "${payload.timelinePosition}" is not in the timeline!`);
   }
   state.geoTimeline = { ...state.geoTimeline };

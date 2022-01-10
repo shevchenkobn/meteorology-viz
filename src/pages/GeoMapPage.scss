@@ -1,0 +1,15 @@
+$timeline-container-height: 64px;
+
+.GeoMapPage {
+  > {
+    width: 100%;
+  }
+
+  .map-container {
+    height: calc(100% - $timeline-container-height);
+  }
+
+  .timeline-container {
+    height: $timeline-container-height;
+  }
+}

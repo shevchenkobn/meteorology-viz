@@ -3,12 +3,12 @@ import { Context, createContext, FunctionComponent, useContext, useEffect, useMe
 import { createStoreHook, Provider, ReactReduxContextValue } from 'react-redux';
 import { Observable, Subject } from 'rxjs';
 import { MacrotaskSingleton } from '../lib/dom';
-import { DeepReadonlyReadState, saveState } from './lib';
+import { DeepReadonlyRootState, saveState } from './lib';
 import { AppAction, storeReducer } from './reducers';
 
-export type AppStore = Store<DeepReadonlyReadState, AppAction>;
+export type AppStore = Store<DeepReadonlyRootState, AppAction>;
 export type AppDispatch = AppStore['dispatch'];
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, DeepReadonlyReadState, unknown, Action<string>>;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, DeepReadonlyRootState, unknown, Action<string>>;
 
 export function createAppStore(): AppStore {
   const store = createStore(storeReducer);
@@ -23,14 +23,14 @@ export function createAppStore(): AppStore {
   return store;
 }
 
-interface AppStateContextValue extends ReactReduxContextValue<DeepReadonlyReadState, AppAction> {
-  state$: Observable<DeepReadonlyReadState>;
+interface AppStateContextValue extends ReactReduxContextValue<DeepReadonlyRootState, AppAction> {
+  state$: Observable<DeepReadonlyRootState>;
 }
 const context = createContext<AppStateContextValue>(null as any);
 
 export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, children }) => {
   const subject = useMemo(() => {
-    const subject = new Subject<DeepReadonlyReadState>();
+    const subject = new Subject<DeepReadonlyRootState>();
     store.subscribe(() => {
       const state = store.getState();
       if (subject) {
@@ -50,7 +50,7 @@ export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, chi
     <Provider store={store} context={context as Context<any>}>
       <context.Provider
         value={{
-          store: store as Store<DeepReadonlyReadState, AppAction>,
+          store: store as Store<DeepReadonlyRootState, AppAction>,
           state$: state$,
           storeState: store.getState(),
         }}

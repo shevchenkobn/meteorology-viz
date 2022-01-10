@@ -1,21 +1,13 @@
 import { CssBaseline } from '@mui/material';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import classNames from './App.module.scss';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { getContentSize, Point } from './lib/dom';
 import Container from '@mui/material/Container';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import './App.scss';
+import { AppHeader } from './AppHeader';
+import { getContentSize, Point } from './lib/dom';
 import { GeoMapPage } from './pages/GeoMapPage';
 
-const title = 'MeteorologyViz';
-
 export function App() {
-  useEffect(() => {
-    document.title = title;
-  }, []);
-
   const [boxSize, setBoxSize] = useState(getDocumentSize());
   const boxRef = useRef<HTMLDivElement>(null);
   const resizeCallback = useCallback(() => {
@@ -33,21 +25,8 @@ export function App() {
   return (
     <>
       <CssBaseline />
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {title}
-          </Typography>
-          {/*<Box sx={{ flexGrow: 1 }}>*/}
-          {/*  {pages.map((page) => (*/}
-          {/*    <Button key={page} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>*/}
-          {/*      {page}*/}
-          {/*    </Button>*/}
-          {/*  ))} */}
-          {/*</Box>*/}
-        </Toolbar>
-      </AppBar>
-      <Container className={classNames['App-main']} maxWidth={false}>
+      <AppHeader />
+      <Container className="App-main" maxWidth={false}>
         <Box ref={boxRef} sx={{ my: 2 }} style={{ width: boxSize.x, height: boxSize.y }}>
           <GeoMapPage />
         </Box>

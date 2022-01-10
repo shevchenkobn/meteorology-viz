@@ -9,11 +9,21 @@ import { withGrowSize } from './with-grow-size';
 import topoJsonData from '../data/europe.topo.json';
 import { DeepReadonly, DeepReadonlyArray, Nullable } from '../lib/types';
 import { defaultHeight, defaultWidth, SizeProps } from '../models/common';
-import classNames from './GeoMap.module.scss';
+import './GeoMap.scss';
 
 export interface GeoMapProps extends DeepReadonly<SizeProps> {
   readonly stations: DeepReadonlyArray<GeoJsonStationFeature>;
   readonly measurements: DeepReadonlyArray<GeoJsonMeasurementFeature>;
+  readonly currentYear?: number;
+}
+
+enum DataSetName {
+  Stations = 'stations',
+  Measurements = 'measurements',
+}
+
+enum Signal {
+  CurrentYear = 'currentYear',
 }
 
 export function GeoMap(props: GeoMapProps) {
@@ -22,26 +32,39 @@ export function GeoMap(props: GeoMapProps) {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<Nullable<View>>(null);
-  if (viewRef.current && containerRef.current) {
-    const detailsNode = containerRef.current.querySelector('details > summary');
-    const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
-    const nonChartNodes = containerRef.current.querySelectorAll('.chart-wrapper > :not(.marks)');
-    const height = iterate(nonChartNodes).reduce(
-      (height, n) => height - (n as Element).getBoundingClientRect().height - 7,
-      props.height
-    );
-    viewRef.current.width(width).height(height).run();
+  if (viewRef.current) {
+    setCurrentYear(viewRef.current);
+    if (containerRef.current) {
+      const detailsNode = containerRef.current.querySelector('details > summary');
+      const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
+      const nonChartNodes = containerRef.current.querySelectorAll('.chart-wrapper > :not(.marks)');
+      const height = iterate(nonChartNodes).reduce(
+        (height, n) => height - (n as Element).getBoundingClientRect().height - 7,
+        props.height
+      );
+      viewRef.current.width(width).height(height);
+    }
+    viewRef.current.run();
   }
 
   return (
-    <div ref={containerRef} className={classNames.GeoMap}>
+    <div ref={containerRef} className="GeoMap">
       <Chart
+        data={{
+          [DataSetName.Stations]: props.stations,
+          [DataSetName.Measurements]: props.measurements,
+        }}
         onNewView={(view) => {
           viewRef.current = view;
+          setCurrentYear(viewRef.current);
         }}
       />
     </div>
   );
+
+  function setCurrentYear(view: View) {
+    view.signal(Signal.CurrentYear, props.currentYear ?? null).run();
+  }
 }
 
 export const GrowingGeoMap = withGrowSize(GeoMap);
@@ -125,7 +148,7 @@ function createChart(theme: Theme) {
 
         {
           name: 'scale',
-          value: 1200,
+          value: 2030,
           bind: { name: 'Scale', input: 'range', min: 0, max: 10000, step: 1 },
           on: [
             {
@@ -185,6 +208,11 @@ function createChart(theme: Theme) {
             },
           ],
         },
+
+        {
+          name: Signal.CurrentYear,
+          value: null,
+        },
       ],
 
       projections: [
@@ -218,15 +246,27 @@ function createChart(theme: Theme) {
         {
           name: 'elevation',
           type: 'linear',
-          domain: [0, 500],
-          range: ['#e5f5e0', '#00441b'],
+          domain: [0, 166.666666667, 333.33333333, 500],
+          range: ['#00441b', '#a1d99b', '#fdae6b', '#d95f0e'],
           clamp: true,
         },
         {
           name: 'temperature',
           type: 'linear',
-          domain: [-25, 0, 35],
-          range: ['#053061', '#f7f7f7', '#67001f'],
+          domain: [-25, -20, -15, -10, -5, 0, 7, 14, 21, 28, 35],
+          range: [
+            '#053061',
+            '#2166ac',
+            '#4393c3',
+            '#92c5de',
+            '#d1e5f0',
+            '#f7f7f7',
+            '#fddbc7',
+            '#f4a582',
+            '#d6604d',
+            '#b2182b',
+            '#67001f',
+          ],
           clamp: true,
         },
       ],
@@ -249,12 +289,6 @@ function createChart(theme: Theme) {
           direction: 'horizontal',
           gradientStrokeWidth: 1,
           gradientStrokeColor: { value: theme.palette.grey['300'] },
-          // encode: {
-          //   labels: {
-          //     update: {
-          //     },
-          //   },
-          // },
         },
         {
           type: 'symbol',
@@ -284,69 +318,10 @@ function createChart(theme: Theme) {
           transform: [{ type: 'graticule' }],
         },
         {
-          name: 'stations',
-          values: [
-            {
-              type: 'Feature',
-              properties: {
-                mag: 10,
-                sig: 40,
-              },
-              geometry: {
-                type: 'MultiPoint',
-                coordinates: [[35.232845, 49.988358, 26.49]], // Kharkiv
-              },
-              id: 'ci37868143',
-            },
-            {
-              type: 'Feature',
-              properties: {
-                mag: 16,
-                sig: 40,
-              },
-              geometry: {
-                type: 'MultiPoint',
-                coordinates: [[35.732845, 49.988358, 26.49]], // Kharkiv
-              },
-              id: 'ci37868143',
-            },
-            {
-              type: 'Feature',
-              properties: {
-                mag: 31,
-                sig: 40,
-              },
-              geometry: {
-                type: 'MultiPoint',
-                coordinates: [[36.232845, 49.988358, 26.49]], // Kharkiv
-              },
-              id: 'ci37868143',
-            },
-            {
-              type: 'Feature',
-              properties: {
-                mag: 28,
-                sig: 40,
-              },
-              geometry: {
-                type: 'MultiPoint',
-                coordinates: [[36.732845, 49.988358, 26.49]], // Kharkiv
-              },
-              id: 'ci37868143',
-            },
-            {
-              type: 'Feature',
-              properties: {
-                mag: 10,
-                sig: 25,
-              },
-              geometry: {
-                type: 'Point',
-                coordinates: [-0.118092, 51.509865, 26.49], // London
-              },
-              id: 'ci37868144',
-            },
-          ],
+          name: DataSetName.Stations,
+        },
+        {
+          name: DataSetName.Measurements,
         },
       ],
 
@@ -357,9 +332,7 @@ function createChart(theme: Theme) {
           encode: {
             update: {
               strokeWidth: { value: 1 },
-              strokeDash: { value: 0 },
               stroke: { value: theme.palette.grey['300'] },
-              fill: { value: null },
             },
           },
           transform: [{ type: 'geoshape', projection: 'projection' }],
@@ -384,18 +357,39 @@ function createChart(theme: Theme) {
         },
         {
           type: 'shape',
-          from: { data: 'stations' },
+          from: { data: DataSetName.Stations },
           encode: {
             update: {
-              opacity: { signal: 'datum.properties.sig / 100' },
-              fill: { value: 'red' },
+              strokeWidth: { value: 1 },
+              stroke: { value: theme.palette.primary.main },
+              fill: {
+                signal: `!isNumber(currentYear) || (currentYear >= datum.properties.yearFirst && currentYear <= datum.properties.yearLast) ? scale('elevation', datum.properties.elevation) : '${theme.palette.grey['50']}'`,
+              },
             },
           },
           transform: [
             {
               type: 'geoshape',
               projection: 'projection',
-              pointRadius: { expr: "scale('measurementsPerMonth', datum.properties.mag)" },
+              pointRadius: 3.5,
+            },
+          ],
+        },
+        {
+          type: 'shape',
+          from: { data: DataSetName.Measurements },
+          encode: {
+            update: {
+              strokeWidth: { value: 1 },
+              stroke: { value: theme.palette.primary.main },
+              fill: { signal: "scale('temperature', datum.properties.measurement.temperature)" },
+            },
+          },
+          transform: [
+            {
+              type: 'geoshape',
+              projection: 'projection',
+              pointRadius: { expr: "scale('measurementsPerMonth', datum.properties.measurement.observations)" },
             },
           ],
         },

@@ -1,5 +1,5 @@
 import camelcase from 'camelcase';
-import { ParseResult, parse } from 'papaparse';
+import { parse, ParseResult } from 'papaparse';
 import { whenT } from './expressions';
 
 export interface CsvParseConfig<T = Record<string, any>> {
