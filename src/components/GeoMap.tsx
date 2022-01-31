@@ -66,7 +66,9 @@ export function GeoMap(props: GeoMapProps) {
       );
       view.width(width).height(height);
     }
-    view.resize(); // required for actual dataset rerendering.
+    // required for actual dataset rerendering.
+    view.data(DataSetName.Measurements, props.measurements);
+    view.data(DataSetName.Stations, props.stations);
     view.run();
   }
 }
