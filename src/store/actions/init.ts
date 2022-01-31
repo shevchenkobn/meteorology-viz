@@ -20,6 +20,8 @@ export function getInitialState(): RootState {
   const measurements = loadMeasurements();
 
   const stationMap = fromEntries(iterate(stations.data).map((s) => t(s.station, s)));
+  const countryMap = fromEntries(iterate(countries.data).map((c) => t(c.code, c.name)));
+  const getCountryName = (code: string) => countryMap[code];
 
   const measurementsByDate: GeoState['measurementsByDate'] = {};
   let minDate: MeasurementDate = '9999-12';
@@ -30,7 +32,8 @@ export function getInitialState(): RootState {
         station: asNotMaybe(stationMap[m.station]),
         measurements: [m],
       }))
-      .flatten()
+      .flatten(),
+    getCountryName
   )) {
     const m = feature.properties.measurement;
     const date = getDate(m);
@@ -61,13 +64,13 @@ export function getInitialState(): RootState {
       max: maxDate,
     },
     mapped: {
-      countries: fromEntries(iterate(countries.data).map((c) => t(c.code, c.name))),
+      countries: countryMap,
       stations: stationMap,
     },
     geo: {
       measurementsByDate: measurementsByDate,
       datesWithMeasurements: (Object.keys(measurementsByDate) as MeasurementDate[]).sort(),
-      stations: stations.data.map((s) => toGeoJsonStationFeature(s)),
+      stations: stations.data.map((s) => toGeoJsonStationFeature(s, getCountryName)),
     },
     geoTimeline: {
       isPlaying: false,

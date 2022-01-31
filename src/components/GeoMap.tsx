@@ -357,9 +357,6 @@ function createChart(theme: Theme) {
               strokeWidth: { value: 2 },
               stroke: { value: theme.palette.secondary.main },
               zindex: { value: 1 },
-              tooltip: {
-                signal: '{title: "Country"}',
-              },
             },
           },
           transform: [{ type: 'geoshape', projection: 'projection' }],
@@ -370,14 +367,25 @@ function createChart(theme: Theme) {
           encode: {
             hover: {
               tooltip: {
-                signal: '{title: "Station"}',
+                signal:
+                  '{' +
+                  'title: datum.properties.station.station + " - station", ' +
+                  '"Status": currentYear < datum.properties.station.yearFirst ? "Not Yet Open" : currentYear > datum.properties.station.yearLast ? "Already Closed" : "Active", ' +
+                  '"Name": datum.properties.station.name, ' +
+                  '"Latitude": datum.properties.station.latitude + " °", ' +
+                  '"Longitude": datum.properties.station.longitude + " °", ' +
+                  '"Elevation": datum.properties.station.elevation + " m", ' +
+                  '"Country": datum.properties.countryName + " (" + datum.properties.station.countryCode + ")", ' +
+                  '"First Year": datum.properties.station.yearFirst, ' +
+                  '"Last Year": datum.properties.station.yearLast' +
+                  '}',
               },
             },
             update: {
               strokeWidth: { value: 1 },
               stroke: { value: theme.palette.primary.main },
               fill: {
-                signal: `!isNumber(currentYear) || (currentYear >= datum.properties.yearFirst && currentYear <= datum.properties.yearLast) ? scale('elevation', datum.properties.elevation) : '${theme.palette.grey['50']}'`,
+                signal: `!isNumber(currentYear) || (currentYear >= datum.properties.station.yearFirst && currentYear <= datum.properties.station.yearLast) ? scale('elevation', datum.properties.station.elevation) : '${theme.palette.grey['50']}'`,
               },
             },
           },
@@ -395,7 +403,20 @@ function createChart(theme: Theme) {
           encode: {
             hover: {
               tooltip: {
-                signal: '{title: "Measurement"}',
+                signal:
+                  '{' +
+                  'title: datum.properties.measurement.temperature + " °C, " + datum.properties.measurement.year + "-" + datum.properties.measurement.month + ", " + datum.properties.station.station, ' +
+                  '"Temperature": datum.properties.measurement.temperature + " °C", ' +
+                  '"Year": datum.properties.measurement.year, ' +
+                  '"Month": datum.properties.measurement.month, ' +
+                  '"Observations": datum.properties.measurement.observations, ' +
+                  '"Station": datum.properties.station.station, ' +
+                  '"Station Name": datum.properties.station.name, ' +
+                  '"Latitude": datum.properties.station.latitude + " °", ' +
+                  '"Longitude": datum.properties.station.longitude + " °", ' +
+                  '"Elevation": datum.properties.station.elevation + " m", ' +
+                  '"Country": datum.properties.countryName + " (" + datum.properties.station.countryCode + ")"' +
+                  '}',
               },
             },
             update: {

@@ -13,7 +13,8 @@ export const measurementYOffsetDegree = -0.5;
 export const measurementXDistanceDegree = 0.5;
 
 export function* toGeoJsonMeasurementFeatures<M extends DeepReadonly<Measurement>, S extends DeepReadonly<Station>>(
-  stationsWithMeasurements: Iterable<DeepReadonly<StationWithMeasurements<M, S>>>
+  stationsWithMeasurements: Iterable<DeepReadonly<StationWithMeasurements<M, S>>>,
+  countryNameGetter: (countryCode: string) => string
 ): Generator<GeoJsonMeasurementFeature<M, S>> {
   for (const d of stationsWithMeasurements) {
     const xFullOffset =
@@ -25,7 +26,7 @@ export function* toGeoJsonMeasurementFeatures<M extends DeepReadonly<Measurement
       i < d.measurements.length;
       i += 1, m = d.measurements[i], xOffset += measurementXDistanceDegree
     ) {
-      yield toGeoJsonMeasurementFeature<M, S>(m as M, () => d.station as S, {
+      yield toGeoJsonMeasurementFeature<M, S>(m as M, () => d.station as S, countryNameGetter, {
         x: xOffset,
         y: measurementYOffsetDegree,
       });
@@ -41,11 +42,18 @@ export type GeoJsonMeasurementFeature<
 export interface GeoJsonFeatureProperties<M extends DeepReadonly<Measurement>, S extends DeepReadonly<Station>> {
   station: S;
   measurement: M;
+  countryName: string;
+}
+
+export interface GeoJsonStationProperties<S extends DeepReadonly<Station> = Station> {
+  station: S;
+  countryName: string;
 }
 
 export function toGeoJsonMeasurementFeature<M extends DeepReadonly<Measurement>, S extends DeepReadonly<Station>>(
   measurement: M,
   stationGetter: (station: string) => S,
+  countryNameGetter: (countryCode: string) => string,
   coordinateOffset: DeepReadonly<Point>
 ): GeoJsonMeasurementFeature<M, S> {
   const station = stationGetter(measurement.station);
@@ -59,13 +67,18 @@ export function toGeoJsonMeasurementFeature<M extends DeepReadonly<Measurement>,
     properties: {
       measurement,
       station,
+      countryName: countryNameGetter(station.countryCode),
     },
   };
 }
 
-export type GeoJsonStationFeature<S extends DeepReadonly<Station> = Station> = Feature<GeoJsonPoint, S>;
+export type GeoJsonStationFeature<P extends DeepReadonly<GeoJsonStationProperties> = GeoJsonStationProperties> =
+  Feature<GeoJsonPoint, P>;
 
-export function toGeoJsonStationFeature<S extends DeepReadonly<Station>>(station: S): GeoJsonStationFeature<S> {
+export function toGeoJsonStationFeature<S extends DeepReadonly<Station>>(
+  station: S,
+  countryNameGetter: (countryCode: string) => string
+): GeoJsonStationFeature<GeoJsonStationProperties<S>> {
   return {
     type: 'Feature',
     id: station.station,
@@ -73,6 +86,9 @@ export function toGeoJsonStationFeature<S extends DeepReadonly<Station>>(station
       type: 'Point',
       coordinates: [station.longitude, station.latitude, station.elevation],
     },
-    properties: station,
+    properties: {
+      station,
+      countryName: countryNameGetter(station.countryCode),
+    },
   };
 }

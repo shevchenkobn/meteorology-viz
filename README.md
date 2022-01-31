@@ -49,6 +49,7 @@ Both views are connected and have two-way data linking. The page is responsive, 
 
 ## TODO:
 - update gradient checkpoints with more precise limits **OR** change temperature gradient;
+- move timeline logic to the `GeoMapPage` component.
 
 ## PLAN:
 - finish tooltips for station and meas.

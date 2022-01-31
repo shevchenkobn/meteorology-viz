@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import './App.scss';
 import { AppHeader } from './AppHeader';
 import { getContentSize, Point } from './lib/dom';
-import { GeoMapPage } from './pages/GeoMapPage';
+import { AppRouter } from './AppRouter';
 
 export function App() {
   const [boxSize, setBoxSize] = useState(getDocumentSize());
@@ -28,7 +28,7 @@ export function App() {
       <AppHeader />
       <Container className="App-main" maxWidth={false}>
         <Box ref={boxRef} sx={{ my: 2 }} style={{ width: boxSize.x, height: boxSize.y }}>
-          <GeoMapPage />
+          <AppRouter />
         </Box>
       </Container>
     </>

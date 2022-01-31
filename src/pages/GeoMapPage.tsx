@@ -37,7 +37,7 @@ export function GeoMapPage() {
     const stationIds = iterate(measurements)
       .map((d) => d.properties.station.station)
       .toSet();
-    return stations.filter((s) => stationIds.has(s.properties.station));
+    return stations.filter((s) => stationIds.has(s.properties.station.station));
   }, [showAllStations, stations, measurements]);
   return (
     <div className="GeoMapPage grow-size">
