@@ -46,3 +46,18 @@ Both views are connected and have two-way data linking. The page is responsive, 
 
 ## FIXES:
 - `"react-error-overlay": "6.0.9"` in `package.json`: https://github.com/facebook/create-react-app/issues/11771;
+
+## TODO:
+- update gradient checkpoints with more precise limits **OR** change temperature gradient;
+
+## PLAN:
+- finish tooltips for station and meas.
+- timeline:
+  - add month select with input.
+  - add autoplay (non-configurable)
+- 2 tab
+  - inputs
+- TODOs
+- timeline:
+  - add step configuration
+  - add speed configuration

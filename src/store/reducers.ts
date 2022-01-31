@@ -1,9 +1,15 @@
 import { actions } from './actions';
 import { initActionStart } from './actions/init';
-import { SetTimelinePosition } from './actions/set-timeline-position';
-import { loadState, RootState } from './lib';
+import { SetTimelinePlaying, setTimelinePlayingCaseReducer } from './actions/set-timeline-playing';
+import { SetTimelinePosition, setTimelinePositionCaseReducer } from './actions/set-timeline-position';
+import { ActionType, loadState, RootState } from './lib';
 
-export type AppAction = SetTimelinePosition;
+export interface AppActionMap {
+  [ActionType.SetTimelinePosition]: SetTimelinePosition;
+  [ActionType.SetTimelinePlaying]: SetTimelinePlaying;
+}
+
+export type AppAction = AppActionMap[keyof AppActionMap];
 
 export type AppCaseReducer<A extends AppAction = AppAction> = (state: RootState, action: A) => RootState;
 

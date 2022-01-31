@@ -33,18 +33,7 @@ export function GeoMap(props: GeoMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<Nullable<View>>(null);
   if (viewRef.current) {
-    setCurrentYear(viewRef.current);
-    if (containerRef.current) {
-      const detailsNode = containerRef.current.querySelector('details > summary');
-      const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
-      const nonChartNodes = containerRef.current.querySelectorAll('.chart-wrapper > :not(.marks)');
-      const height = iterate(nonChartNodes).reduce(
-        (height, n) => height - (n as Element).getBoundingClientRect().height - 7,
-        props.height
-      );
-      viewRef.current.width(width).height(height);
-    }
-    viewRef.current.run();
+    rerenderView(viewRef.current);
   }
 
   return (
@@ -56,7 +45,7 @@ export function GeoMap(props: GeoMapProps) {
         }}
         onNewView={(view) => {
           viewRef.current = view;
-          setCurrentYear(viewRef.current);
+          rerenderView(viewRef.current);
         }}
       />
     </div>
@@ -64,6 +53,21 @@ export function GeoMap(props: GeoMapProps) {
 
   function setCurrentYear(view: View) {
     view.signal(Signal.CurrentYear, props.currentYear ?? null).run();
+  }
+  function rerenderView(view: View) {
+    setCurrentYear(view);
+    if (containerRef.current) {
+      const detailsNode = containerRef.current.querySelector('details > summary');
+      const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
+      const nonChartNodes = containerRef.current.querySelectorAll('.chart-wrapper > :not(.marks)');
+      const height = iterate(nonChartNodes).reduce(
+        (height, n) => height - (n as Element).getBoundingClientRect().height - 7,
+        props.height
+      );
+      view.width(width).height(height);
+    }
+    view.resize(); // required for actual dataset rerendering.
+    view.run();
   }
 }
 
@@ -351,6 +355,9 @@ function createChart(theme: Theme) {
               strokeWidth: { value: 2 },
               stroke: { value: theme.palette.secondary.main },
               zindex: { value: 1 },
+              tooltip: {
+                signal: '{title: "Country"}',
+              },
             },
           },
           transform: [{ type: 'geoshape', projection: 'projection' }],
@@ -359,6 +366,11 @@ function createChart(theme: Theme) {
           type: 'shape',
           from: { data: DataSetName.Stations },
           encode: {
+            hover: {
+              tooltip: {
+                signal: '{title: "Station"}',
+              },
+            },
             update: {
               strokeWidth: { value: 1 },
               stroke: { value: theme.palette.primary.main },
@@ -379,9 +391,17 @@ function createChart(theme: Theme) {
           type: 'shape',
           from: { data: DataSetName.Measurements },
           encode: {
+            hover: {
+              tooltip: {
+                signal: '{title: "Measurement"}',
+              },
+            },
             update: {
-              strokeWidth: { value: 1 },
-              stroke: { value: theme.palette.primary.main },
+              strokeWidth: { value: 3 },
+              // stroke: { value: theme.palette.primary.main },
+              stroke: {
+                signal: `!isNumber(currentYear) || (currentYear >= datum.properties.station.yearFirst && currentYear <= datum.properties.station.yearLast) ? scale('elevation', datum.properties.station.elevation) : '${theme.palette.primary.main}'`,
+              },
               fill: { signal: "scale('temperature', datum.properties.measurement.temperature)" },
             },
           },

@@ -12,6 +12,8 @@ import { GeoState, RootState } from '../lib';
 
 export const initActionStart = '@@redux/INIT';
 
+export const geoTimelineStepIntervalMs = 350;
+
 export function getInitialState(): RootState {
   const countries = loadCountries();
   const stations = loadStations();
@@ -64,12 +66,13 @@ export function getInitialState(): RootState {
     },
     geo: {
       measurementsByDate: measurementsByDate,
+      datesWithMeasurements: (Object.keys(measurementsByDate) as MeasurementDate[]).sort(),
       stations: stations.data.map((s) => toGeoJsonStationFeature(s)),
     },
     geoTimeline: {
       isPlaying: false,
       currentPosition: minDate,
-      stepIntervalMs: 500,
+      stepIntervalMs: geoTimelineStepIntervalMs,
     },
   };
 }

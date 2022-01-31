@@ -23,6 +23,11 @@ export function getMeasurementId(measurement: DeepReadonly<Measurement>) {
  */
 export type MeasurementDate = `${number}-${number}`;
 
+const measurementDateRegex = /^\d{4}-[01]\d$/;
+export function isMeasurementDate(value: unknown): value is MeasurementDate {
+  return typeof value === 'string' && measurementDateRegex.test(value);
+}
+
 export function getDate(measurement: DeepReadonly<MeasurementDateObject>): MeasurementDate {
   return `${measurement.year.toString().padStart(4, '0')}-${measurement.month
     .toString()

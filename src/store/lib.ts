@@ -10,10 +10,12 @@ import { getInitialState } from './actions/init';
 
 export enum ActionType {
   SetTimelinePosition = 'setTimelinePosition',
+  SetTimelinePlaying = 'setTimelinePlaying',
 }
 
 export interface GeoState {
   measurementsByDate: Record<MeasurementDate, GeoJsonMeasurementFeature[]>;
+  datesWithMeasurements: MeasurementDate[];
   stations: GeoJsonStationFeature[];
 }
 export interface RootState {
@@ -42,6 +44,14 @@ export type DeepReadonlyRootState = DeepReadonly<RootState>;
 
 export function selectGeoData(state: DeepReadonlyRootState) {
   return state.geo;
+}
+
+export function selectGeoDatesWithMeasurements(state: DeepReadonlyRootState) {
+  return selectGeoData(state).datesWithMeasurements;
+}
+
+export function selectGeoTimelineIsPlaying(state: DeepReadonlyRootState) {
+  return state.geoTimeline.isPlaying;
 }
 
 export function areGeoDataShallowEqual(oldData: DeepReadonly<GeoState>, newData: DeepReadonly<GeoState>) {

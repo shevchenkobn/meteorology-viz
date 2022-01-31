@@ -47,7 +47,7 @@ export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, chi
   useEffect(() => () => subject.complete(), [subject]);
 
   return (
-    <Provider store={store} context={context as Context<any>}>
+    <Provider store={store}>
       <context.Provider
         value={{
           store: store as Store<DeepReadonlyRootState, AppAction>,
