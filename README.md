@@ -48,8 +48,9 @@ Both views are connected and have two-way data linking. The page is responsive, 
 - `"react-error-overlay": "6.0.9"` in `package.json`: https://github.com/facebook/create-react-app/issues/11771;
 
 ## TODO:
-- update gradient checkpoints with more precise limits **OR** change temperature gradient;
+- update gradient checkpoints with more precise limits (perhaps, adaptive) **OR** change temperature gradient;
 - move timeline logic to the `GeoMapPage` component.
+- Local Storage cache overflow.
 
 ## PLAN:
 - finish tooltips for station and meas.

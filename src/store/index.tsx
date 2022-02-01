@@ -18,8 +18,8 @@ export function createAppStore(): AppStore {
     const state = store.getState();
     stateSaver.setCallback(() => saveState(state));
   };
-  store.subscribe(saveAsync);
-  saveAsync();
+  // store.subscribe(saveAsync);
+  // saveAsync();
   return store;
 }
 

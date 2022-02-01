@@ -1,5 +1,6 @@
 import iterate from 'iterare';
 import { useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { distinctUntilChanged, map } from 'rxjs';
 import { GrowingGeoMap } from '../components/GeoMap';
 import { Timeline } from '../components/Timeline';
@@ -7,20 +8,14 @@ import { asEffectReset } from '../lib/rx';
 import { parseMeasurementDate } from '../models/measurement';
 import { useRxAppStore } from '../store';
 import { setTimelinePosition } from '../store/actions/set-timeline-position';
-import { areGeoDataShallowEqual, selectGeoData, selectGeoTimelinePosition } from '../store/lib';
+import { areGeoDataShallowEqual, selectGeoData, selectGeoTimelinePosition, selectMappedCountries } from '../store/lib';
 import './GeoMapPage.scss';
 
 export function GeoMapPage() {
   const { store, state$ } = useRxAppStore();
   const state = store.getState();
-  const [{ stations, measurementsByDate }, setGeoData] = useState(selectGeoData(state));
-  useEffect(
-    () =>
-      asEffectReset(
-        state$.pipe(map(selectGeoData), distinctUntilChanged(areGeoDataShallowEqual)).subscribe(setGeoData)
-      ),
-    [state$]
-  );
+  const { stations, measurementsByDate } = useSelector(selectGeoData, areGeoDataShallowEqual);
+  const countries = useSelector(selectMappedCountries);
   const [showAllStations, setShowAllStations] = useState(true);
 
   const [position, setPosition] = useState(selectGeoTimelinePosition(state));
@@ -46,6 +41,7 @@ export function GeoMapPage() {
           stations={filteredStations}
           measurements={measurementsByDate[position]}
           currentYear={parseMeasurementDate(position).year}
+          countries={countries}
         />
       </div>
       <div className="timeline-container">

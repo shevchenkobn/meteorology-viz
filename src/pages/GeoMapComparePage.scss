@@ -1,0 +1,7 @@
+$selections-height: 15vh;
+
+.GeoMapComparePage {
+  .map-container {
+    height: calc(100% - $selections-height);
+  }
+}

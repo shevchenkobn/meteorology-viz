@@ -14,6 +14,10 @@ import './GeoMap.scss';
 export interface GeoMapProps extends DeepReadonly<SizeProps> {
   readonly stations: DeepReadonlyArray<GeoJsonStationFeature>;
   readonly measurements: DeepReadonlyArray<GeoJsonMeasurementFeature>;
+  /**
+   * Map from country code to country name.
+   */
+  readonly countries?: DeepReadonly<Record<string, string>>;
   readonly currentYear?: number;
 }
 
@@ -24,6 +28,7 @@ enum DataSetName {
 
 enum Signal {
   CurrentYear = 'currentYear',
+  Countries = 'countries',
 }
 
 export function GeoMap(props: GeoMapProps) {
@@ -56,6 +61,7 @@ export function GeoMap(props: GeoMapProps) {
   }
   function rerenderView(view: View) {
     setCurrentYear(view);
+    view.signal(Signal.Countries, props.countries || {});
     if (containerRef.current) {
       const detailsNode = containerRef.current.querySelector('details > summary');
       const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
@@ -219,6 +225,10 @@ function createChart(theme: Theme) {
           name: Signal.CurrentYear,
           value: null,
         },
+        {
+          name: Signal.Countries,
+          value: {},
+        },
       ],
 
       projections: [
@@ -375,7 +385,7 @@ function createChart(theme: Theme) {
                   '"Latitude": datum.properties.station.latitude + " °", ' +
                   '"Longitude": datum.properties.station.longitude + " °", ' +
                   '"Elevation": datum.properties.station.elevation + " m", ' +
-                  '"Country": datum.properties.countryName + " (" + datum.properties.station.countryCode + ")", ' +
+                  `"Country": isString(${Signal.Countries}[datum.properties.station.countryCode]) ? ${Signal.Countries}[datum.properties.station.countryCode] + " (" + datum.properties.station.countryCode + ")" : datum.properties.station.countryCode, ` +
                   '"First Year": datum.properties.station.yearFirst, ' +
                   '"Last Year": datum.properties.station.yearLast' +
                   '}',
@@ -415,7 +425,7 @@ function createChart(theme: Theme) {
                   '"Latitude": datum.properties.station.latitude + " °", ' +
                   '"Longitude": datum.properties.station.longitude + " °", ' +
                   '"Elevation": datum.properties.station.elevation + " m", ' +
-                  '"Country": datum.properties.countryName + " (" + datum.properties.station.countryCode + ")"' +
+                  `"Country": isString(${Signal.Countries}[datum.properties.station.countryCode]) ? ${Signal.Countries}[datum.properties.station.countryCode] + " (" + datum.properties.station.countryCode + ")" : datum.properties.station.countryCode` +
                   '}',
               },
             },

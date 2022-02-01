@@ -36,17 +36,17 @@ export function AppHeader() {
             </Button>
           ))}
         </Box>
-        {hasCache && (
-          <Button
-            color="inherit"
-            onClick={() => {
-              deleteSavedState();
-              setHasCache(hasSavedState());
-            }}
-          >
-            Clear cache
-          </Button>
-        )}
+        {/*{hasCache && (*/}
+        {/*  <Button*/}
+        {/*    color="inherit"*/}
+        {/*    onClick={() => {*/}
+        {/*      deleteSavedState();*/}
+        {/*      setHasCache(hasSavedState());*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    Clear cache*/}
+        {/*  </Button>*/}
+        {/*)}*/}
       </Toolbar>
     </AppBar>
   );

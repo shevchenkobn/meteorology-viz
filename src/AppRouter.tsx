@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { GeoMapComparePage } from './pages/GeoMapComparePage';
 import { GeoMapPage } from './pages/GeoMapPage';
 
 export function AppRouter() {
@@ -21,5 +22,5 @@ export interface Route {
 
 export const routes: ReadonlyArray<Readonly<Route>> = [
   { path: 'timeline', label: 'Timeline', component: <GeoMapPage /> },
-  { path: 'compare', label: 'Comparison', component: <div>keke</div> },
+  { path: 'compare', label: 'Comparison', component: <GeoMapComparePage /> },
 ];

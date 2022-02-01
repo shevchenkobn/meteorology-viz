@@ -77,5 +77,9 @@ export function getInitialState(): RootState {
       currentPosition: minDate,
       stepIntervalMs: geoTimelineStepIntervalMs,
     },
+    comparison: {
+      selections: [],
+      lastSelectionId: 0,
+    },
   };
 }

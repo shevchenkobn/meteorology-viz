@@ -18,6 +18,11 @@ export interface GeoState {
   datesWithMeasurements: MeasurementDate[];
   stations: GeoJsonStationFeature[];
 }
+
+export interface ComparisonSelection {
+  id: number;
+  dates: MeasurementDate[];
+}
 export interface RootState {
   raw: {
     countries: Country[];
@@ -38,9 +43,17 @@ export interface RootState {
     stepIntervalMs: number;
     currentPosition: MeasurementDate;
   };
+  comparison: {
+    selections: ComparisonSelection[];
+    lastSelectionId: number;
+  };
 }
 
 export type DeepReadonlyRootState = DeepReadonly<RootState>;
+
+export function selectMappedCountries(state: DeepReadonlyRootState) {
+  return state.mapped.countries;
+}
 
 export function selectGeoData(state: DeepReadonlyRootState) {
   return state.geo;
