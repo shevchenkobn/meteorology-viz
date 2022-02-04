@@ -16,6 +16,7 @@ export function GeoMapPage() {
   const state = store.getState();
   const { stations, measurementsByDate } = useSelector(selectGeoData, areGeoDataShallowEqual);
   const countries = useSelector(selectMappedCountries);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showAllStations, setShowAllStations] = useState(true);
 
   const [position, setPosition] = useState(selectGeoTimelinePosition(state));
@@ -39,7 +40,7 @@ export function GeoMapPage() {
       <div className="map-container">
         <GrowingGeoMap
           stations={filteredStations}
-          measurements={measurementsByDate[position]}
+          measurements={measurements}
           currentYear={parseMeasurementDate(position).year}
           countries={countries}
         />

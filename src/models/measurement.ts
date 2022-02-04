@@ -5,16 +5,35 @@ export interface MeasurementDateObject {
   month: number;
 }
 
-export interface Measurement extends MeasurementDateObject {
+export interface CommonMeasurementProps {
   station: string;
-  year: number;
-  month: number;
   temperature: number;
   observations: number;
 }
 
-export function getMeasurementId(measurement: DeepReadonly<Measurement>) {
-  return `${measurement.station}_${getDate(measurement)}`;
+export function cloneCommonMeasurementProps(props: DeepReadonly<CommonMeasurementProps>) {
+  return {
+    station: props.station,
+    temperature: props.temperature,
+    observations: props.observations,
+  };
+}
+
+export interface Measurement extends MeasurementDateObject, CommonMeasurementProps {}
+
+export interface MultiMeasurement extends CommonMeasurementProps {
+  dates: MeasurementDate[];
+}
+
+export function toMultiMeasurement(measurement: DeepReadonly<Measurement>) {
+  const newMeasurement = cloneCommonMeasurementProps(measurement) as MultiMeasurement;
+  newMeasurement.dates = [getDate(measurement)];
+  return newMeasurement;
+}
+
+export function getMeasurementId(measurement: DeepReadonly<MultiMeasurement>) {
+  const sorted = measurement.dates.slice().sort();
+  return `${measurement.station}_${sorted.join(';')}`;
 }
 
 /**

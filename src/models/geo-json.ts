@@ -1,10 +1,10 @@
 import { Feature, Point as GeoJsonPoint } from 'geojson';
 import { Point } from '../lib/dom';
 import { DeepReadonly } from '../lib/types';
-import { getMeasurementId, Measurement } from './measurement';
+import { getMeasurementId, MultiMeasurement } from './measurement';
 import { Station } from './station';
 
-export interface StationWithMeasurements<M extends DeepReadonly<Measurement>, S extends DeepReadonly<Station>> {
+export interface StationWithMeasurements<M extends DeepReadonly<MultiMeasurement>, S extends DeepReadonly<Station>> {
   station: S;
   measurements: M[];
 }
@@ -12,9 +12,11 @@ export interface StationWithMeasurements<M extends DeepReadonly<Measurement>, S 
 export const measurementYOffsetDegree = -0.5;
 export const measurementXDistanceDegree = 0.5;
 
-export function* toGeoJsonMeasurementFeatures<M extends DeepReadonly<Measurement>, S extends DeepReadonly<Station>>(
-  stationsWithMeasurements: Iterable<DeepReadonly<StationWithMeasurements<M, S>>>,
-  countryNameGetter: (countryCode: string) => string
+export function* toGeoJsonMeasurementFeatures<
+  M extends DeepReadonly<MultiMeasurement>,
+  S extends DeepReadonly<Station>
+>(
+  stationsWithMeasurements: Iterable<DeepReadonly<StationWithMeasurements<M, S>>>
 ): Generator<GeoJsonMeasurementFeature<M, S>> {
   for (const d of stationsWithMeasurements) {
     const xFullOffset =
@@ -26,7 +28,7 @@ export function* toGeoJsonMeasurementFeatures<M extends DeepReadonly<Measurement
       i < d.measurements.length;
       i += 1, m = d.measurements[i], xOffset += measurementXDistanceDegree
     ) {
-      yield toGeoJsonMeasurementFeature<M, S>(m as M, () => d.station as S, countryNameGetter, {
+      yield toGeoJsonMeasurementFeature<M, S>(m as M, () => d.station as S, {
         x: xOffset,
         y: measurementYOffsetDegree,
       });
@@ -35,28 +37,25 @@ export function* toGeoJsonMeasurementFeatures<M extends DeepReadonly<Measurement
 }
 
 export type GeoJsonMeasurementFeature<
-  M extends DeepReadonly<Measurement> = Measurement,
+  M extends DeepReadonly<MultiMeasurement> = MultiMeasurement,
   S extends DeepReadonly<Station> = Station
 > = Feature<GeoJsonPoint, GeoJsonFeatureProperties<M, S>>;
 
-export interface GeoJsonFeatureProperties<M extends DeepReadonly<Measurement>, S extends DeepReadonly<Station>> {
+export interface GeoJsonFeatureProperties<M extends DeepReadonly<MultiMeasurement>, S extends DeepReadonly<Station>> {
   station: S;
   measurement: M;
-  countryName: string;
 }
 
 export interface GeoJsonStationProperties<S extends DeepReadonly<Station> = Station> {
   station: S;
-  countryName: string;
 }
 
-export function toGeoJsonMeasurementFeature<M extends DeepReadonly<Measurement>, S extends DeepReadonly<Station>>(
+export function toGeoJsonMeasurementFeature<M extends DeepReadonly<MultiMeasurement>, S extends DeepReadonly<Station>>(
   measurement: M,
-  stationGetter: (station: string) => S,
-  countryNameGetter: (countryCode: string) => string,
+  getStation: (station: string) => S,
   coordinateOffset: DeepReadonly<Point>
 ): GeoJsonMeasurementFeature<M, S> {
-  const station = stationGetter(measurement.station);
+  const station = getStation(measurement.station);
   return {
     type: 'Feature',
     id: getMeasurementId(measurement),
@@ -67,7 +66,6 @@ export function toGeoJsonMeasurementFeature<M extends DeepReadonly<Measurement>,
     properties: {
       measurement,
       station,
-      countryName: countryNameGetter(station.countryCode),
     },
   };
 }
@@ -76,8 +74,7 @@ export type GeoJsonStationFeature<P extends DeepReadonly<GeoJsonStationPropertie
   Feature<GeoJsonPoint, P>;
 
 export function toGeoJsonStationFeature<S extends DeepReadonly<Station>>(
-  station: S,
-  countryNameGetter: (countryCode: string) => string
+  station: S
 ): GeoJsonStationFeature<GeoJsonStationProperties<S>> {
   return {
     type: 'Feature',
@@ -88,7 +85,6 @@ export function toGeoJsonStationFeature<S extends DeepReadonly<Station>>(
     },
     properties: {
       station,
-      countryName: countryNameGetter(station.countryCode),
     },
   };
 }

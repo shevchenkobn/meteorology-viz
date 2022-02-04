@@ -1,4 +1,4 @@
-import { Autocomplete, IconButton, Input, Mark, Slider, TextField } from '@mui/material';
+import { Autocomplete, IconButton, Mark, Slider, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import './Timeline.scss';
 import { iterate } from 'iterare';
@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import { distinctUntilChanged, map } from 'rxjs';
 import { GuardedMap } from '../lib/map';
 import { asEffectReset } from '../lib/rx';
-import { t } from '../lib/types';
 import { getDate, isMeasurementDate, MeasurementDate, parseMeasurementDate } from '../models/measurement';
 import { useRxAppStore } from '../store';
 import { geoTimelineStepIntervalMs } from '../store/actions/init';
@@ -69,7 +68,7 @@ export function Timeline({ date, onDateChange }: TimelineProps) {
     [timelineDates]
   );
   const dateIndexes: GuardedMap<MeasurementDate, number> = useMemo(
-    () => new GuardedMap<MeasurementDate, number>(iterate(timelineDates.entries()).map(([i, v]) => t(v, i))),
+    () => new GuardedMap<MeasurementDate, number>(iterate(timelineDates.entries()).map(([i, v]) => [v, i])),
     [timelineDates]
   );
 

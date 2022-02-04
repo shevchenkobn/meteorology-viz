@@ -1,10 +1,14 @@
 import { Theme, useTheme } from '@mui/material';
+import dayjs from 'dayjs';
+import { Feature, Point as GeoJsonPoint } from 'geojson';
 import { iterate } from 'iterare';
 import { useMemo, useRef } from 'react';
 import { View } from 'react-vega';
 import * as ReactVega from 'react-vega';
 import type { Spec } from 'vega';
 import { GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
+import { cloneCommonMeasurementProps, MeasurementDate, MultiMeasurement } from '../models/measurement';
+import { Station } from '../models/station';
 import { withGrowSize } from './with-grow-size';
 import topoJsonData from '../data/europe.topo.json';
 import { DeepReadonly, DeepReadonlyArray, Nullable } from '../lib/types';
@@ -21,6 +25,19 @@ export interface GeoMapProps extends DeepReadonly<SizeProps> {
   readonly currentYear?: number;
 }
 
+type FormattedMeasurement = Omit<MultiMeasurement, 'dates'> & {
+  dates: string[];
+};
+type MeasurementFeature = DeepReadonly<
+  Feature<
+    GeoJsonPoint,
+    {
+      station: Station;
+      measurement: FormattedMeasurement;
+    }
+  >
+>;
+
 enum DataSetName {
   Stations = 'stations',
   Measurements = 'measurements',
@@ -34,6 +51,26 @@ enum Signal {
 export function GeoMap(props: GeoMapProps) {
   const theme = useTheme();
   const Chart = useMemo(() => createChart(theme), [theme]);
+  const measurements = useMemo(
+    () =>
+      props.measurements.map((f) => {
+        const measurement = cloneCommonMeasurementProps(f.properties.measurement) as FormattedMeasurement;
+        measurement.dates = f.properties.measurement.dates.map(formatDate);
+        const newFeature: MeasurementFeature = {
+          type: f.type,
+          geometry: f.geometry,
+          properties: {
+            station: f.properties.station,
+            measurement,
+          },
+        };
+        if ('id' in f) {
+          (newFeature as Feature<any, any>).id = f.id;
+        }
+        return newFeature;
+      }),
+    [props.measurements]
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<Nullable<View>>(null);
@@ -46,7 +83,7 @@ export function GeoMap(props: GeoMapProps) {
       <Chart
         data={{
           [DataSetName.Stations]: props.stations,
-          [DataSetName.Measurements]: props.measurements,
+          [DataSetName.Measurements]: measurements,
         }}
         onNewView={(view) => {
           viewRef.current = view;
@@ -61,7 +98,9 @@ export function GeoMap(props: GeoMapProps) {
   }
   function rerenderView(view: View) {
     setCurrentYear(view);
-    view.signal(Signal.Countries, props.countries || {});
+    if (props.countries) {
+      view.signal(Signal.Countries, props.countries);
+    }
     if (containerRef.current) {
       const detailsNode = containerRef.current.querySelector('details > summary');
       const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
@@ -73,7 +112,7 @@ export function GeoMap(props: GeoMapProps) {
       view.width(width).height(height);
     }
     // required for actual dataset rerendering.
-    view.data(DataSetName.Measurements, props.measurements);
+    view.data(DataSetName.Measurements, measurements);
     view.data(DataSetName.Stations, props.stations);
     view.run();
   }
@@ -415,10 +454,9 @@ function createChart(theme: Theme) {
               tooltip: {
                 signal:
                   '{' +
-                  'title: datum.properties.measurement.temperature + " °C, " + datum.properties.measurement.year + "-" + datum.properties.measurement.month + ", " + datum.properties.station.station, ' +
+                  'title: datum.properties.measurement.temperature + " °C, " + join(datum.properties.measurement.dates, "; ") + ", " + datum.properties.station.station, ' +
                   '"Temperature": datum.properties.measurement.temperature + " °C", ' +
-                  '"Year": datum.properties.measurement.year, ' +
-                  '"Month": datum.properties.measurement.month, ' +
+                  '"Dates": join(datum.properties.measurement.dates, ", "), ' +
                   '"Observations": datum.properties.measurement.observations, ' +
                   '"Station": datum.properties.station.station, ' +
                   '"Station Name": datum.properties.station.name, ' +
@@ -449,4 +487,8 @@ function createChart(theme: Theme) {
       ],
     } as Spec,
   });
+}
+
+function formatDate(date: MeasurementDate) {
+  return dayjs(date).format('MMM (MM) YYYY');
 }

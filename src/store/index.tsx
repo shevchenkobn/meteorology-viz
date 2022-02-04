@@ -1,5 +1,5 @@
 import { Action, createStore, Store, ThunkAction } from '@reduxjs/toolkit';
-import { Context, createContext, FunctionComponent, useContext, useEffect, useMemo } from 'react';
+import { createContext, FunctionComponent, useContext, useEffect, useMemo } from 'react';
 import { createStoreHook, Provider, ReactReduxContextValue } from 'react-redux';
 import { Observable, Subject } from 'rxjs';
 import { MacrotaskSingleton } from '../lib/dom';
@@ -14,6 +14,7 @@ export function createAppStore(): AppStore {
   const store = createStore(storeReducer);
   // TODO: add unsubscribe logic.
   const stateSaver = new MacrotaskSingleton();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const saveAsync = () => {
     const state = store.getState();
     stateSaver.setCallback(() => saveState(state));

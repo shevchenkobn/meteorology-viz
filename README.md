@@ -53,10 +53,6 @@ Both views are connected and have two-way data linking. The page is responsive, 
 - Local Storage cache overflow.
 
 ## PLAN:
-- finish tooltips for station and meas.
-- timeline:
-  - add month select with input.
-  - add autoplay (non-configurable)
 - 2 tab
   - inputs
 - TODOs

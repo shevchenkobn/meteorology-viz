@@ -12,12 +12,14 @@ export const setTimelinePlaying = createAction<TimelinePlaying, ActionType.SetTi
   ActionType.SetTimelinePlaying
 );
 
-export const setTimelinePlayingCaseReducer: AppCaseReducer<SetTimelinePlaying> = (state, { payload }) => {
-  console.log('state', state.geoTimeline.isPlaying, payload.isPlaying);
-  if (state.geoTimeline.isPlaying === payload.isPlaying) {
+export const setTimelinePlayingCaseReducer: AppCaseReducer<SetTimelinePlaying> = (
+  state,
+  { payload: { isPlaying } }
+) => {
+  if (state.geoTimeline.isPlaying === isPlaying) {
     return state;
   }
   state.geoTimeline = { ...state.geoTimeline };
-  state.geoTimeline.isPlaying = payload.isPlaying;
+  state.geoTimeline.isPlaying = isPlaying;
   return { ...state };
 };

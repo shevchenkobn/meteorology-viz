@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { routes } from './AppRouter';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { deleteSavedState, hasSavedState } from './store/lib';
 
 export const title = 'MeteorologyViz';
@@ -15,6 +16,7 @@ export function AppHeader() {
     document.title = title;
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [hasCache, setHasCache] = useState(hasSavedState());
   const location = useLocation();
   return (

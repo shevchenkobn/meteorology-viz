@@ -28,6 +28,8 @@ export function asNotMaybe<T = unknown>(value: T): NotMaybe<T> {
   return value;
 }
 
+export type Iter<T> = Iterator<T> | Iterable<T>;
+
 export const asReadonly = Symbol('asReadonly');
 
 export interface ReadonlyMarker<RT> {
@@ -103,6 +105,9 @@ export type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
+/**
+ * @deprecated
+ */
 export function t<A>(...args: [A]): [A];
 export function t<A, B>(...args: [A, B]): [A, B];
 export function t<A, B, C>(...args: [A, B, C]): [A, B, C];

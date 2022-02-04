@@ -13,12 +13,15 @@ export const setTimelinePosition = createAction<TimelinePosition, ActionType.Set
   ActionType.SetTimelinePosition
 );
 
-export const setTimelinePositionCaseReducer: AppCaseReducer<SetTimelinePosition> = (state, { payload }) => {
+export const setTimelinePositionCaseReducer: AppCaseReducer<SetTimelinePosition> = (
+  state,
+  { payload: { timelinePosition } }
+) => {
   const limits = selectMeasurementsLimits(state);
-  if (payload.timelinePosition < limits.min || payload.timelinePosition > limits.max) {
-    throw new TypeError(`Measurement date "${payload.timelinePosition}" is not in the timeline!`);
+  if (timelinePosition < limits.min || timelinePosition > limits.max) {
+    throw new TypeError(`Measurement date "${timelinePosition}" is not in the timeline!`);
   }
   state.geoTimeline = { ...state.geoTimeline };
-  state.geoTimeline.currentPosition = payload.timelinePosition;
+  state.geoTimeline.currentPosition = timelinePosition;
   return state;
 };

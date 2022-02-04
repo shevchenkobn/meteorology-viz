@@ -4,31 +4,33 @@ import { storeLocalStorageKey } from '../lib/data';
 import { DeepReadonly } from '../lib/types';
 import { Country } from '../models/country';
 import { GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
-import { Measurement, MeasurementDate } from '../models/measurement';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Measurement, MeasurementDate, MultiMeasurement } from '../models/measurement';
 import { Station } from '../models/station';
 import { getInitialState } from './actions/init';
 
 export enum ActionType {
   SetTimelinePosition = 'setTimelinePosition',
   SetTimelinePlaying = 'setTimelinePlaying',
+  AddComparisonSelection = 'comparisonSelection.add',
+  RemoveComparisonSelection = 'comparisonSelection.remove',
+  UpdateComparisonSelection = 'comparisonSelection.update',
 }
 
 export interface GeoState {
   measurementsByDate: Record<MeasurementDate, GeoJsonMeasurementFeature[]>;
-  datesWithMeasurements: MeasurementDate[];
+  nonEmptyMeasurementDates: MeasurementDate[];
   stations: GeoJsonStationFeature[];
 }
 
-export interface ComparisonSelection {
-  id: number;
-  dates: MeasurementDate[];
-}
+export type ComparisonMeasurements = Record<Station['station'], Record<number, MultiMeasurement>>;
+
 export interface RootState {
-  raw: {
-    countries: Country[];
-    stations: Station[];
-    measurements: Measurement[];
-  };
+  // raw: {
+  //   countries: Country[];
+  //   stations: Station[];
+  //   measurements: Measurement[];
+  // };
   measurementLimits: {
     min: MeasurementDate;
     max: MeasurementDate;
@@ -44,8 +46,9 @@ export interface RootState {
     currentPosition: MeasurementDate;
   };
   comparison: {
-    selections: ComparisonSelection[];
+    selections: Record<number, MeasurementDate[]>;
     lastSelectionId: number;
+    measurements: ComparisonMeasurements;
   };
 }
 
@@ -60,7 +63,7 @@ export function selectGeoData(state: DeepReadonlyRootState) {
 }
 
 export function selectGeoDatesWithMeasurements(state: DeepReadonlyRootState) {
-  return selectGeoData(state).datesWithMeasurements;
+  return selectGeoData(state).nonEmptyMeasurementDates;
 }
 
 export function selectGeoTimelineIsPlaying(state: DeepReadonlyRootState) {
