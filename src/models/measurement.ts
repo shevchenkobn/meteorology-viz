@@ -23,11 +23,13 @@ export interface Measurement extends MeasurementDateObject, CommonMeasurementPro
 
 export interface MultiMeasurement extends CommonMeasurementProps {
   dates: MeasurementDate[];
+  nonEmptyDates: number;
 }
 
 export function toMultiMeasurement(measurement: DeepReadonly<Measurement>) {
   const newMeasurement = cloneCommonMeasurementProps(measurement) as MultiMeasurement;
   newMeasurement.dates = [getDate(measurement)];
+  newMeasurement.nonEmptyDates = 1;
   return newMeasurement;
 }
 

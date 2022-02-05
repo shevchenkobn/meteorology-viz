@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
-import { objectKeys } from '../../lib/object';
 import { ActionType } from '../lib';
 import { AppCaseReducer } from '../reducers';
+import { getOrder } from './lib/comparison';
 
 export interface ComparisonSelection {
   comparisonSelectionId: number;
@@ -17,12 +17,8 @@ export const removeComparisonSelectionCaseReducer: AppCaseReducer<RemoveComparis
   state,
   { payload: { comparisonSelectionId } }
 ) => {
-  state.comparison.selections = { ...state.comparison.selections };
-  delete state.comparison.selections[comparisonSelectionId];
-
-  for (const station of objectKeys(state.mapped.stations)) {
-    state.comparison.measurements[station] = { ...state.comparison.measurements[station] };
-    delete state.comparison.measurements[station][comparisonSelectionId];
-  }
+  state.comparison.draftSelectionsDelta.map = { ...state.comparison.draftSelectionsDelta.map };
+  delete state.comparison.draftSelectionsDelta.map[comparisonSelectionId];
+  state.comparison.draftSelectionsDelta.order = getOrder(state.comparison).filter((id) => id !== comparisonSelectionId);
   return state;
 };

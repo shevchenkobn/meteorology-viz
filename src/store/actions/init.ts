@@ -76,7 +76,14 @@ export function getInitialState(): RootState {
       stepIntervalMs: geoTimelineStepIntervalMs,
     },
     comparison: {
-      selections: {},
+      selections: {
+        map: {},
+        order: [],
+      },
+      draftSelectionsDelta: {
+        map: {},
+        order: [],
+      },
       lastSelectionId: 0,
       measurements: fromEntries(iterate(objectKeys(stationMap)).map((s) => [s, {}])),
     },

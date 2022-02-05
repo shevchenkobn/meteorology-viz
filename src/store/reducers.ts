@@ -1,5 +1,6 @@
 import { actions } from './actions';
 import { AddComparisonSelection } from './actions/add-comparison-selection';
+import { ApplyComparisonSelection } from './actions/apply-comparison-selection';
 import { initActionStart } from './actions/init';
 import { RemoveComparisonSelection } from './actions/remove-comparison-selection';
 import { SetTimelinePlaying } from './actions/set-timeline-playing';
@@ -13,6 +14,8 @@ export interface AppActionMap {
   [ActionType.AddComparisonSelection]: AddComparisonSelection;
   [ActionType.RemoveComparisonSelection]: RemoveComparisonSelection;
   [ActionType.UpdateComparisonSelection]: UpdateComparisonSelection;
+  [ActionType.ApplyComparisonSelection]: ApplyComparisonSelection;
+  [ActionType.RestoreComparisonSelection]: RemoveComparisonSelection;
 }
 
 export type AppAction = AppActionMap[keyof AppActionMap];

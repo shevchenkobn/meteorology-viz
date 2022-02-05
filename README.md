@@ -49,13 +49,23 @@ Both views are connected and have two-way data linking. The page is responsive, 
 
 ## TODO:
 - update gradient checkpoints with more precise limits (perhaps, adaptive) **OR** change temperature gradient;
-- move timeline logic to the `GeoMapPage` component.
 - Local Storage cache overflow.
+- global average (where? near legend? bottom?)
+- timeline with global average
+- Understand if { ...state } is required in all actions
+- TopoJSON to country code:
+  - hover country border
+  - bg country border
 
 ## PLAN:
-- 2 tab
-  - inputs
-- TODOs
+- accent border on measurement hover and line using primary accent (like in pub-viz)
+- comparison selection inputs
+  - select or autocomplete
+  - select by entire years
+  - select by entire seasons
+  - select by months for all years
 - timeline:
   - add step configuration
   - add speed configuration
+- move timeline logic to the `GeoMapPage` component.
+- TODOs

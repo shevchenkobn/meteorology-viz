@@ -52,7 +52,7 @@ export const AppProvider: FunctionComponent<{ store: AppStore }> = ({ store, chi
       <context.Provider
         value={{
           store: store as Store<DeepReadonlyRootState, AppAction>,
-          state$: state$,
+          state$,
           storeState: store.getState(),
         }}
       >

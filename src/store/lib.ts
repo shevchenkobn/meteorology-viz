@@ -15,6 +15,8 @@ export enum ActionType {
   AddComparisonSelection = 'comparisonSelection.add',
   RemoveComparisonSelection = 'comparisonSelection.remove',
   UpdateComparisonSelection = 'comparisonSelection.update',
+  ApplyComparisonSelection = 'comparisonSelection.apply',
+  RestoreComparisonSelection = 'comparisonSelection.restore',
 }
 
 export interface GeoState {
@@ -23,6 +25,13 @@ export interface GeoState {
   stations: GeoJsonStationFeature[];
 }
 
+export interface ComparisonSelections {
+  map: Record<number, MeasurementDate[]>;
+  /**
+   * Selection IDs ordered.
+   */
+  order: number[];
+}
 export type ComparisonMeasurements = Record<Station['station'], Record<number, MultiMeasurement>>;
 
 export interface RootState {
@@ -46,7 +55,8 @@ export interface RootState {
     currentPosition: MeasurementDate;
   };
   comparison: {
-    selections: Record<number, MeasurementDate[]>;
+    selections: ComparisonSelections;
+    draftSelectionsDelta: ComparisonSelections;
     lastSelectionId: number;
     measurements: ComparisonMeasurements;
   };
@@ -58,8 +68,16 @@ export function selectMappedCountries(state: DeepReadonlyRootState) {
   return state.mapped.countries;
 }
 
+export function selectMappedStations(state: DeepReadonlyRootState) {
+  return state.mapped.stations;
+}
+
 export function selectGeoData(state: DeepReadonlyRootState) {
   return state.geo;
+}
+
+export function selectGeoStations(state: DeepReadonlyRootState) {
+  return selectGeoData(state).stations;
 }
 
 export function selectGeoDatesWithMeasurements(state: DeepReadonlyRootState) {
@@ -80,6 +98,14 @@ export function selectGeoTimelinePosition(state: DeepReadonlyRootState) {
 
 export function selectMeasurementsLimits(state: DeepReadonlyRootState) {
   return state.measurementLimits;
+}
+
+export function selectComparisonMeasurements(state: DeepReadonlyRootState) {
+  return state.comparison.measurements;
+}
+
+export function selectComparisonSelectionOrder(state: DeepReadonlyRootState) {
+  return state.comparison.selections.order;
 }
 
 export function loadState() {

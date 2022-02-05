@@ -3,7 +3,7 @@ import { GuardedMap } from '../../../lib/map';
 import { DeepReadonly, DeepReadonlyArray, Iter } from '../../../lib/types';
 import { CommonMeasurementProps, MeasurementDate } from '../../../models/measurement';
 import { Station } from '../../../models/station';
-import { ComparisonMeasurements } from '../../lib';
+import { ComparisonMeasurements, DeepReadonlyRootState } from '../../lib';
 
 export function getNextId(lastId: number, isTaken: (id: number) => boolean) {
   let id = lastId;
@@ -25,6 +25,10 @@ export type AverageByStation = GuardedMap<
     count: number;
   }
 >;
+
+export function getOrder(state: DeepReadonlyRootState['comparison']) {
+  return state.draftSelectionsDelta.order.length > 0 ? state.selections.order : state.selections.order;
+}
 
 export function calculateAverageByStation(
   dates: Iterable<MeasurementDate>,
@@ -56,6 +60,7 @@ export function setAverageMeasurements(
     measurements[station][comparisonSelectionId] = {
       station,
       dates: dates.slice(),
+      nonEmptyDates: average.count,
       temperature: average.count > 0 ? average.value : Number.NaN,
       observations: average.observations,
     };
