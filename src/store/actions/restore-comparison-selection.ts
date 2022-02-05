@@ -12,6 +12,8 @@ export function doRestoreComparisonSelection(state: RootState) {
   state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
   state.comparison.draftSelectionsDelta.order = [];
   state.comparison.draftSelectionsDelta.map = {};
+  state.comparison = { ...state.comparison };
+  state.comparison.isEditing = false;
 
   return state;
 }

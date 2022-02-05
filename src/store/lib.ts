@@ -12,6 +12,7 @@ import { getInitialState } from './actions/init';
 export enum ActionType {
   SetTimelinePosition = 'setTimelinePosition',
   SetTimelinePlaying = 'setTimelinePlaying',
+  EditComparisonSelection = 'comparisonSelection.edit',
   AddComparisonSelection = 'comparisonSelection.add',
   RemoveComparisonSelection = 'comparisonSelection.remove',
   UpdateComparisonSelection = 'comparisonSelection.update',
@@ -58,6 +59,7 @@ export interface RootState {
     selections: ComparisonSelections;
     draftSelectionsDelta: ComparisonSelections;
     lastSelectionId: number;
+    isEditing: boolean;
     measurements: ComparisonMeasurements;
   };
 }
@@ -100,12 +102,28 @@ export function selectMeasurementsLimits(state: DeepReadonlyRootState) {
   return state.measurementLimits;
 }
 
+export function selectComparisonIsEditing(state: DeepReadonlyRootState) {
+  return state.comparison.isEditing;
+}
+
+export function selectComparisonSelection(state: DeepReadonlyRootState) {
+  return state.comparison.selections;
+}
+
+export function selectComparisonDraftSelectionDelta(state: DeepReadonlyRootState) {
+  return state.comparison.draftSelectionsDelta;
+}
+
 export function selectComparisonMeasurements(state: DeepReadonlyRootState) {
   return state.comparison.measurements;
 }
 
 export function selectComparisonSelectionOrder(state: DeepReadonlyRootState) {
   return state.comparison.selections.order;
+}
+
+export function selectComparisonDraftSelectionDeltaOrder(state: DeepReadonlyRootState) {
+  return state.comparison.draftSelectionsDelta.order;
 }
 
 export function loadState() {

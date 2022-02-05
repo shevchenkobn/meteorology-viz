@@ -1,6 +1,6 @@
 import { Action, createStore, Store, ThunkAction } from '@reduxjs/toolkit';
 import { createContext, FunctionComponent, useContext, useEffect, useMemo } from 'react';
-import { createStoreHook, Provider, ReactReduxContextValue } from 'react-redux';
+import { createStoreHook, Provider, ReactReduxContextValue, useDispatch } from 'react-redux';
 import { Observable, Subject } from 'rxjs';
 import { MacrotaskSingleton } from '../lib/dom';
 import { DeepReadonlyRootState, saveState } from './lib';
@@ -9,6 +9,8 @@ import { AppAction, storeReducer } from './reducers';
 export type AppStore = Store<DeepReadonlyRootState, AppAction>;
 export type AppDispatch = AppStore['dispatch'];
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, DeepReadonlyRootState, unknown, Action<string>>;
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export function createAppStore(): AppStore {
   const store = createStore(storeReducer);

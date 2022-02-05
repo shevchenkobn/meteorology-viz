@@ -4,7 +4,7 @@ import { AppCaseReducer } from '../reducers';
 import { getOrder } from './lib/comparison';
 
 export interface ComparisonSelection {
-  comparisonSelectionId: number;
+  readonly comparisonSelectionId: number;
 }
 
 export type RemoveComparisonSelection = ReturnType<typeof removeComparisonSelection>;

@@ -5,7 +5,7 @@ import { AppCaseReducer } from '../reducers';
 import { getNextId, getOrder } from './lib/comparison';
 
 export interface NewComparisonSelection {
-  dates: MeasurementDate[];
+  readonly dates: ReadonlyArray<MeasurementDate>;
 }
 
 export type AddComparisonSelection = ReturnType<typeof addComparisonSelection>;

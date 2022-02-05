@@ -4,8 +4,8 @@ import { ActionType } from '../lib';
 import { AppCaseReducer } from '../reducers';
 
 export interface ComparisonSelectionUpdate {
-  comparisonSelectionId: number;
-  dates: MeasurementDate[];
+  readonly comparisonSelectionId: number;
+  readonly dates: ReadonlyArray<MeasurementDate>;
 }
 
 export type UpdateComparisonSelection = ReturnType<typeof updateComparisonSelection>;

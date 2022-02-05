@@ -89,6 +89,7 @@ export function getInitialState(): RootState {
         order: [],
       },
       lastSelectionId: 0,
+      isEditing: false,
       measurements: fromEntries(iterate(objectKeys(stationMap)).map((s) => [s, {}])),
     },
   };

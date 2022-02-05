@@ -1,7 +1,7 @@
 import { Feature, LineString, Point as GeoJsonPoint } from 'geojson';
 import { Point } from '../lib/dom';
 import { cast, DeepReadonly, Optional } from '../lib/types';
-import { CommonMeasurementProps, getMeasurementId, Measurement, MultiMeasurement } from './measurement';
+import { getMeasurementId, MultiMeasurement } from './measurement';
 import { Station } from './station';
 
 export interface StationWithMeasurements<M extends DeepReadonly<MultiMeasurement>, S extends DeepReadonly<Station>> {

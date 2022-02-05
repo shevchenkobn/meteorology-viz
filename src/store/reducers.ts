@@ -1,6 +1,7 @@
 import { actions } from './actions';
 import { AddComparisonSelection } from './actions/add-comparison-selection';
 import { ApplyComparisonSelection } from './actions/apply-comparison-selection';
+import { EditComparisonSelection } from './actions/edit-comparison-selection';
 import { initActionStart } from './actions/init';
 import { RemoveComparisonSelection } from './actions/remove-comparison-selection';
 import { SetTimelinePlaying } from './actions/set-timeline-playing';
@@ -11,6 +12,7 @@ import { ActionType, loadState, RootState } from './lib';
 export interface AppActionMap {
   [ActionType.SetTimelinePosition]: SetTimelinePosition;
   [ActionType.SetTimelinePlaying]: SetTimelinePlaying;
+  [ActionType.EditComparisonSelection]: EditComparisonSelection;
   [ActionType.AddComparisonSelection]: AddComparisonSelection;
   [ActionType.RemoveComparisonSelection]: RemoveComparisonSelection;
   [ActionType.UpdateComparisonSelection]: UpdateComparisonSelection;
