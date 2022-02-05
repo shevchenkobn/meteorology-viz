@@ -25,22 +25,23 @@ export function GeoMapPage() {
     [state$]
   );
 
-  const measurements = useMemo(() => measurementsByDate[position] ?? [], [measurementsByDate, position]);
+  const features = useMemo(() => measurementsByDate[position] ?? [], [measurementsByDate, position]);
   const filteredStations = useMemo(() => {
     if (showAllStations) {
       return stations;
     }
-    const stationIds = iterate(measurements)
+    const stationIds = iterate(features.measurements)
       .map((d) => d.properties.station.station)
       .toSet();
     return stations.filter((s) => stationIds.has(s.properties.station.station));
-  }, [showAllStations, stations, measurements]);
+  }, [showAllStations, stations, features]);
   return (
     <div className="GeoMapPage grow-size">
       <div className="map-container">
         <GrowingGeoMap
           stations={filteredStations}
-          measurements={measurements}
+          measurements={features.measurements}
+          connections={features.connections}
           currentYear={parseMeasurementDate(position).year}
           countries={countries}
         />

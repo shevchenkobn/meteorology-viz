@@ -28,7 +28,7 @@ export const applyComparisonSelectionCaseReducer: AppCaseReducer<ApplyComparison
 
   for (const [id, dates] of objectEntries(state.comparison.draftSelectionsDelta.map)) {
     const averageByStation = calculateAverageByStation(dates, objectKeys(state.mapped.stations), (date) =>
-      iterate(state.geo.measurementsByDate[date]).map((f) => f.properties.measurement)
+      iterate(state.geo.measurementsByDate[date].measurements).map((f) => f.properties.measurement)
     );
     setAverageMeasurements(state.comparison.measurements, id, dates, averageByStation);
   }

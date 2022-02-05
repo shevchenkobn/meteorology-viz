@@ -3,7 +3,7 @@ import { deserializeError } from 'serialize-error';
 import { storeLocalStorageKey } from '../lib/data';
 import { DeepReadonly } from '../lib/types';
 import { Country } from '../models/country';
-import { GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
+import { GeoJsonMeasurementFeatures, GeoJsonStationFeature } from '../models/geo-json';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Measurement, MeasurementDate, MultiMeasurement } from '../models/measurement';
 import { Station } from '../models/station';
@@ -20,7 +20,7 @@ export enum ActionType {
 }
 
 export interface GeoState {
-  measurementsByDate: Record<MeasurementDate, GeoJsonMeasurementFeature[]>;
+  measurementsByDate: Record<MeasurementDate, GeoJsonMeasurementFeatures>;
   nonEmptyMeasurementDates: MeasurementDate[];
   stations: GeoJsonStationFeature[];
 }

@@ -3,7 +3,7 @@ import { loadCountries, loadMeasurements, loadStations } from '../../data';
 import { fromEntries, objectKeys } from '../../lib/object';
 import { asNotMaybe } from '../../lib/types';
 import {
-  GeoJsonMeasurementFeature,
+  GeoJsonMeasurementFeatures,
   toGeoJsonMeasurementFeatures,
   toGeoJsonStationFeature,
 } from '../../models/geo-json';
@@ -25,7 +25,7 @@ export function getInitialState(): RootState {
   const measurementsByDate: GeoState['measurementsByDate'] = {};
   let minDate: MeasurementDate = '9999-12';
   let maxDate: MeasurementDate = '0000-01';
-  for (const feature of toGeoJsonMeasurementFeatures(
+  for (const { feature, connection } of toGeoJsonMeasurementFeatures(
     iterate(measurements.data)
       .map((m) => ({
         station: asNotMaybe(stationMap[m.station]),
@@ -41,14 +41,18 @@ export function getInitialState(): RootState {
     if (date > maxDate) {
       maxDate = date;
     }
-    let measurements: GeoJsonMeasurementFeature[];
+    let features: GeoJsonMeasurementFeatures;
     if (!(date in measurementsByDate)) {
-      measurements = [];
-      measurementsByDate[date] = measurements;
+      features = {
+        measurements: [],
+        connections: [],
+      };
+      measurementsByDate[date] = features;
     } else {
-      measurements = measurementsByDate[date];
+      features = measurementsByDate[date];
     }
-    measurements.push(feature);
+    features.measurements.push(feature);
+    features.connections.push(connection);
   }
 
   return {

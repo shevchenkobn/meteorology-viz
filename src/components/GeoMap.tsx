@@ -6,7 +6,7 @@ import { useMemo, useRef } from 'react';
 import { View } from 'react-vega';
 import * as ReactVega from 'react-vega';
 import type { Spec } from 'vega';
-import { GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
+import { GeoJsonMeasurementConnection, GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
 import { cloneCommonMeasurementProps, MeasurementDate, MultiMeasurement } from '../models/measurement';
 import { Station } from '../models/station';
 import { withGrowSize } from './with-grow-size';
@@ -18,6 +18,7 @@ import './GeoMap.scss';
 export interface GeoMapProps extends DeepReadonly<SizeProps> {
   readonly stations: DeepReadonlyArray<GeoJsonStationFeature>;
   readonly measurements: DeepReadonlyArray<GeoJsonMeasurementFeature>;
+  readonly connections?: DeepReadonlyArray<GeoJsonMeasurementConnection>;
   /**
    * Map from country code to country name.
    */
@@ -41,6 +42,7 @@ type MeasurementFeature = DeepReadonly<
 enum DataSetName {
   Stations = 'stations',
   Measurements = 'measurements',
+  Connections = 'connections',
 }
 
 enum Signal {
@@ -114,6 +116,7 @@ export function GeoMap(props: GeoMapProps) {
     // required for actual dataset rerendering.
     view.data(DataSetName.Measurements, measurements);
     view.data(DataSetName.Stations, props.stations);
+    view.data(DataSetName.Connections, props.connections || []);
     view.run();
   }
 }
@@ -268,6 +271,17 @@ function createChart(theme: Theme) {
           name: Signal.Countries,
           value: {},
         },
+
+        {
+          name: 'hoveredStation',
+          value: null,
+          on: [
+            {
+              events: 'mouseover',
+              update: 'datum && datum.geometry && datum.geometry.type === "Point" ? datum.properties.station : null',
+            },
+          ],
+        },
       ],
 
       projections: [
@@ -378,6 +392,9 @@ function createChart(theme: Theme) {
         {
           name: DataSetName.Measurements,
         },
+        {
+          name: DataSetName.Connections,
+        },
       ],
 
       marks: [
@@ -412,6 +429,26 @@ function createChart(theme: Theme) {
         },
         {
           type: 'shape',
+          from: { data: DataSetName.Connections },
+          encode: {
+            update: {
+              strokeWidth: {
+                signal: 'hoveredStation && hoveredStation.station === datum.properties.station.station ? 3 : 2',
+              },
+              stroke: {
+                signal: `hoveredStation && hoveredStation.station === datum.properties.station.station ? "${theme.palette.secondary.main}" : "${theme.palette.primary.main}"`,
+              },
+            },
+          },
+          transform: [
+            {
+              type: 'geoshape',
+              projection: 'projection',
+            },
+          ],
+        },
+        {
+          type: 'shape',
           from: { data: DataSetName.Stations },
           encode: {
             hover: {
@@ -431,8 +468,12 @@ function createChart(theme: Theme) {
               },
             },
             update: {
-              strokeWidth: { value: 1 },
-              stroke: { value: theme.palette.primary.main },
+              strokeWidth: {
+                signal: 'hoveredStation && hoveredStation.station === datum.properties.station.station ? 3 : 1',
+              },
+              stroke: {
+                signal: `hoveredStation && hoveredStation.station === datum.properties.station.station ? "${theme.palette.secondary.main}" : "${theme.palette.primary.main}"`,
+              },
               fill: {
                 signal: `!isNumber(currentYear) || (currentYear >= datum.properties.station.yearFirst && currentYear <= datum.properties.station.yearLast) ? scale('elevation', datum.properties.station.elevation) : '${theme.palette.grey['50']}'`,
               },
@@ -442,7 +483,9 @@ function createChart(theme: Theme) {
             {
               type: 'geoshape',
               projection: 'projection',
-              pointRadius: 3.5,
+              pointRadius: {
+                expr: 'hoveredStation && hoveredStation.station === datum.properties.station.station ? 5 : 3.5',
+              },
             },
           ],
         },

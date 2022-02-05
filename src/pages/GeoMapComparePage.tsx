@@ -2,42 +2,54 @@ import { iterate } from 'iterare';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { GrowingGeoMap } from '../components/GeoMap';
-import './GeoMapComparePage.scss';
 import { objectEntries } from '../lib/object';
-import { toGeoJsonMeasurementFeatures } from '../models/geo-json';
+import { DeepReadonly } from '../lib/types';
+import { GeoJsonMeasurementFeatures, toGeoJsonMeasurementFeatures } from '../models/geo-json';
+import { MultiMeasurement } from '../models/measurement';
+import { Station } from '../models/station';
 import {
   selectComparisonMeasurements,
   selectComparisonSelectionOrder,
   selectGeoStations,
   selectMappedStations,
 } from '../store/lib';
+import './GeoMapComparePage.scss';
 
 export function GeoMapComparePage() {
   const stationMap = useSelector(selectMappedStations);
   const stations = useSelector(selectGeoStations);
   const comparisonMeasurements = useSelector(selectComparisonMeasurements);
   const comparisonOrder = useSelector(selectComparisonSelectionOrder);
-  const measurements = useMemo(
+  const features = useMemo(
     () =>
-      Array.from(
-        iterate(objectEntries(comparisonMeasurements))
-          .map(([station, measurementMap]) =>
-            toGeoJsonMeasurementFeatures([
-              {
-                station: stationMap[station],
-                measurements: comparisonOrder.map((id) => measurementMap[id]),
-              },
-            ])
-          )
-          .flatten()
-      ),
+      iterate(objectEntries(comparisonMeasurements))
+        .map(([station, measurementMap]) =>
+          toGeoJsonMeasurementFeatures([
+            {
+              station: stationMap[station],
+              measurements: comparisonOrder.map((id) => measurementMap[id]),
+            },
+          ])
+        )
+        .flatten()
+        .reduce(
+          (o, { feature, connection }) => {
+            o.measurements.push(feature);
+            o.connections.push(connection);
+            return o;
+          },
+          { measurements: [], connections: [] } as GeoJsonMeasurementFeatures<
+            DeepReadonly<MultiMeasurement>,
+            DeepReadonly<Station>
+          >
+        ),
     [comparisonMeasurements, comparisonOrder, stationMap]
   );
 
   return (
     <div className="grow-size GeoMapComparePage">
       <div className="map-container">
-        <GrowingGeoMap stations={stations} measurements={measurements} />
+        <GrowingGeoMap stations={stations} measurements={features.measurements} connections={features.connections} />
       </div>
       <div>filters</div>
     </div>
