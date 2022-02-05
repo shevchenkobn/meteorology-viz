@@ -11,7 +11,7 @@ export interface CommonMeasurementProps {
   observations: number;
 }
 
-export function cloneCommonMeasurementProps(props: DeepReadonly<CommonMeasurementProps>) {
+export function cloneDeepCommonMeasurementProps(props: DeepReadonly<CommonMeasurementProps>) {
   return {
     station: props.station,
     temperature: props.temperature,
@@ -27,15 +27,25 @@ export interface MultiMeasurement extends CommonMeasurementProps {
 }
 
 export function toMultiMeasurement(measurement: DeepReadonly<Measurement>) {
-  const newMeasurement = cloneCommonMeasurementProps(measurement) as MultiMeasurement;
+  const newMeasurement = cloneDeepCommonMeasurementProps(measurement) as MultiMeasurement;
   newMeasurement.dates = [getDate(measurement)];
   newMeasurement.nonEmptyDates = 1;
   return newMeasurement;
 }
 
-export function getMeasurementId(measurement: DeepReadonly<MultiMeasurement>) {
-  const sorted = measurement.dates.slice().sort();
-  return `${measurement.station}_${sorted.join(';')}`;
+export function cloneDeepMultiMeasurement(measurement: DeepReadonly<MultiMeasurement>) {
+  const newMeasurement = cloneDeepCommonMeasurementProps(measurement) as MultiMeasurement;
+  newMeasurement.dates = measurement.dates.slice();
+  newMeasurement.nonEmptyDates = measurement.nonEmptyDates;
+  return newMeasurement;
+}
+
+export function getMeasurementId(measurement: DeepReadonly<MultiMeasurement>, datesId?: string) {
+  if (typeof datesId !== 'string') {
+    const sorted = measurement.dates.slice().sort();
+    datesId = sorted.join(';');
+  }
+  return `${measurement.station}_${datesId}`;
 }
 
 /**

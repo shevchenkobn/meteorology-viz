@@ -53,12 +53,11 @@ Both views are connected and have two-way data linking. The page is responsive, 
 - global average (where? near legend? bottom?)
 - timeline with global average
 - Understand if { ...state } is required in all actions
-- TopoJSON to country code:
+- TopoJSON to country code (by updating ID of TopoJSON points):
   - hover country border
   - bg country border
 
 ## PLAN:
-- accent border on measurement hover and line using primary accent (like in pub-viz)
 - comparison selection inputs
   - select or autocomplete
   - select by entire years

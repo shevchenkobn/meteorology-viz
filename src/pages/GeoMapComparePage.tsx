@@ -5,7 +5,7 @@ import { GrowingGeoMap } from '../components/GeoMap';
 import { objectEntries } from '../lib/object';
 import { DeepReadonly } from '../lib/types';
 import { GeoJsonMeasurementFeatures, toGeoJsonMeasurementFeatures } from '../models/geo-json';
-import { MultiMeasurement } from '../models/measurement';
+import { cloneDeepMultiMeasurement, MultiMeasurement } from '../models/measurement';
 import { Station } from '../models/station';
 import {
   selectComparisonMeasurements,
@@ -15,6 +15,9 @@ import {
 } from '../store/lib';
 import './GeoMapComparePage.scss';
 
+interface MeasurementWithDatesId extends MultiMeasurement {
+  datesId: string;
+}
 export function GeoMapComparePage() {
   const stationMap = useSelector(selectMappedStations);
   const stations = useSelector(selectGeoStations);
@@ -24,12 +27,19 @@ export function GeoMapComparePage() {
     () =>
       iterate(objectEntries(comparisonMeasurements))
         .map(([station, measurementMap]) =>
-          toGeoJsonMeasurementFeatures([
-            {
-              station: stationMap[station],
-              measurements: comparisonOrder.map((id) => measurementMap[id]),
-            },
-          ])
+          toGeoJsonMeasurementFeatures(
+            [
+              {
+                station: stationMap[station],
+                measurements: comparisonOrder.map((id) => {
+                  const measurement = cloneDeepMultiMeasurement(measurementMap[id]) as MeasurementWithDatesId;
+                  measurement.datesId = '_' + id.toString();
+                  return measurement;
+                }),
+              },
+            ],
+            (m) => m.datesId
+          )
         )
         .flatten()
         .reduce(

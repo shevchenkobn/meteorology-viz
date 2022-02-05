@@ -7,7 +7,7 @@ import { View } from 'react-vega';
 import * as ReactVega from 'react-vega';
 import type { Spec } from 'vega';
 import { GeoJsonMeasurementConnection, GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
-import { cloneCommonMeasurementProps, MeasurementDate, MultiMeasurement } from '../models/measurement';
+import { cloneDeepCommonMeasurementProps, MeasurementDate, MultiMeasurement } from '../models/measurement';
 import { Station } from '../models/station';
 import { withGrowSize } from './with-grow-size';
 import topoJsonData from '../data/europe.topo.json';
@@ -56,7 +56,7 @@ export function GeoMap(props: GeoMapProps) {
   const measurements = useMemo(
     () =>
       props.measurements.map((f) => {
-        const measurement = cloneCommonMeasurementProps(f.properties.measurement) as FormattedMeasurement;
+        const measurement = cloneDeepCommonMeasurementProps(f.properties.measurement) as FormattedMeasurement;
         measurement.dates = f.properties.measurement.dates.map(formatDate);
         const newFeature: MeasurementFeature = {
           type: f.type,
