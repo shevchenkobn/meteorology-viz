@@ -41,7 +41,6 @@ export function GeoMapComparePage() {
   const draftComparisonSelection = useSelector(selectComparisonDraftSelectionDelta);
   const editedComparisonOrder =
     draftComparisonSelection.order.length !== 0 ? draftComparisonSelection.order : comparisonSelection.order;
-  console.log('selectiosn', editedComparisonOrder, draftComparisonSelection, comparisonSelection);
   const editedComparisonSelection = useMemo(
     () =>
       ({
@@ -55,6 +54,7 @@ export function GeoMapComparePage() {
       } as ComparisonSelections),
     [comparisonSelection.map, draftComparisonSelection.map, editedComparisonOrder]
   );
+  console.log('redner', 'c', editedComparisonSelection, 'd', draftComparisonSelection, 'r', comparisonSelection);
 
   const features = useMemo(
     () =>

@@ -20,7 +20,7 @@ export const addComparisonSelectionCaseReducer: AppCaseReducer<AddComparisonSele
 ) => {
   const nextId = getNextId(
     state.comparison.lastSelectionId,
-    (id) => !!state.comparison.selections.map[id] && !!state.comparison.draftSelectionsDelta.map[id]
+    (id) => !!state.comparison.selections.map[id] || !!state.comparison.draftSelectionsDelta.map[id]
   );
   state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
   state.comparison.draftSelectionsDelta.map = { ...state.comparison.draftSelectionsDelta.map };

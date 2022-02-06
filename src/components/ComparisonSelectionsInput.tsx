@@ -5,8 +5,6 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DeepReadonlyArray } from '../lib/types';
 import { MeasurementDate } from '../models/measurement';
-import { removeComparisonSelection } from '../store/actions/remove-comparison-selection';
-import { updateComparisonSelection } from '../store/actions/update-comparison-selection';
 import { ComparisonSelections, selectGeoDatesWithMeasurements } from '../store/lib';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -39,7 +37,7 @@ export function ComparisonSelectionsInput({
   const dates = useSelector(selectGeoDatesWithMeasurements);
   const [newSelectionDates, setNewSelectionDates] = useState([] as MeasurementDate[]);
 
-  const indexWidth = comparisonSelections.order.length * 2 + 0.5 + 'rem';
+  const indexWidth = comparisonSelections.order.length.toString().length * 2 + 0.5 + 'rem';
 
   return (
     <Paper className="ComparisonSelectionsInput" elevation={1}>
@@ -71,7 +69,6 @@ export function ComparisonSelectionsInput({
           )
         ) : (
           <>
-            {JSON.stringify(comparisonSelections)}
             {comparisonSelections.order.map((id, i) => (
               <div key={id} className="flex flex-items-center">
                 <Chip
@@ -84,8 +81,8 @@ export function ComparisonSelectionsInput({
                   <ComparisonSelection
                     datesOptions={isEditing ? dates : undefined}
                     dates={comparisonSelections.map[id]}
-                    onUpdate={(dates) => updateComparisonSelection({ comparisonSelectionId: id, dates })}
-                    onDelete={() => removeComparisonSelection({ comparisonSelectionId: id })}
+                    onUpdate={(dates) => onComparisonSelectionUpdate(id, dates)}
+                    onDelete={() => onComparisonSelectionRemove(id)}
                   />
                 </div>
               </div>

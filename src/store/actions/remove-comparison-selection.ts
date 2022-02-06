@@ -17,6 +17,7 @@ export const removeComparisonSelectionCaseReducer: AppCaseReducer<RemoveComparis
   state,
   { payload: { comparisonSelectionId } }
 ) => {
+  state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
   state.comparison.draftSelectionsDelta.map = { ...state.comparison.draftSelectionsDelta.map };
   delete state.comparison.draftSelectionsDelta.map[comparisonSelectionId];
   state.comparison.draftSelectionsDelta.order = getOrder(state.comparison).filter((id) => id !== comparisonSelectionId);

@@ -29,15 +29,16 @@ export function ComparisonSelection({
         multiple
         className="flex-grow"
         disableCloseOnSelect={true}
-        disableClearable={dates.length === 1}
+        disableClearable={true}
         size="small"
         filterSelectedOptions
         renderInput={(params) => (
           <TextField {...params} variant="filled" label="Edit Selection" placeholder="Edit Selection" />
         )}
+        value={dates.slice()}
         options={datesOptions}
         onChange={(event, values) => {
-          if (values.length > 0) {
+          if (values.length !== 0) {
             onUpdate(values);
           }
         }}

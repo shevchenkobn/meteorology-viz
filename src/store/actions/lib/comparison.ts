@@ -27,7 +27,7 @@ export type AverageByStation = GuardedMap<
 >;
 
 export function getOrder(state: DeepReadonlyRootState['comparison']) {
-  return state.draftSelectionsDelta.order.length > 0 ? state.selections.order : state.selections.order;
+  return state.draftSelectionsDelta.order.length > 0 ? state.draftSelectionsDelta.order : state.selections.order;
 }
 
 export function calculateAverageByStation(

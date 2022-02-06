@@ -18,6 +18,7 @@ export const updateComparisonSelectionCaseReducer: AppCaseReducer<UpdateComparis
   state,
   { payload: { comparisonSelectionId, dates } }
 ) => {
+  state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
   state.comparison.draftSelectionsDelta.map = { ...state.comparison.draftSelectionsDelta.map };
   state.comparison.draftSelectionsDelta.map[comparisonSelectionId] = dates.slice();
   if (state.comparison.draftSelectionsDelta.order.length === 0) {
