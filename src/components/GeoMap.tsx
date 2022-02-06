@@ -97,7 +97,7 @@ export function GeoMap(props: GeoMapProps) {
         }}
         onNewView={(view) => {
           viewRef.current = view;
-          rerenderView(viewRef.current, true);
+          rerenderView(viewRef.current);
         }}
       />
     </div>
@@ -106,21 +106,28 @@ export function GeoMap(props: GeoMapProps) {
   function setCurrentYear(view: View) {
     view.signal(Signal.CurrentYear, props.currentYear ?? null).run();
   }
-  function rerenderView(view: View, firstRun = false) {
+  function rerenderView(view: View) {
     setCurrentYear(view);
     if (props.countries) {
       view.signal(Signal.Countries, props.countries);
     }
+    let dispatchResize = false;
     if (containerRef.current) {
       const { x, y } = getChartSize(containerRef.current);
-      view.width(x).height(y);
+      dispatchResize = view.width() !== x || view.height() !== y;
+      if (dispatchResize) {
+        view.width(x).height(y);
+      }
     }
     // required for actual dataset rerendering.
     view.data(DataSetName.Measurements, measurements);
     view.data(DataSetName.Stations, props.stations);
     view.data(DataSetName.Connections, props.connections || []);
     if (props.produceResizeEvent) {
-      view.runAsync().finally(() => window.dispatchEvent(new Event('resize')));
+      const promise = view.runAsync();
+      if (dispatchResize) {
+        promise.finally(() => window.dispatchEvent(new Event('resize')));
+      }
     } else {
       view.run();
     }

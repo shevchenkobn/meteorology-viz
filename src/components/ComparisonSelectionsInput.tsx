@@ -1,8 +1,9 @@
-import { Paper } from '@mui/material';
+import { IconButton, Paper } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { DeepReadonlyArray } from '../lib/types';
 import { MeasurementDate } from '../models/measurement';
 import { ComparisonSelections } from '../store/lib';
+import EditIcon from '@mui/icons-material/Edit';
 import './ComparisonSelectionsInput.scss';
 
 export interface ComparisonSelectionsProps {
@@ -19,9 +20,14 @@ export interface ComparisonSelectionsProps {
 export function ComparisonSelectionsInput(props: ComparisonSelectionsProps) {
   return (
     <Paper className="ComparisonSelectionsInput" elevation={1}>
-      <Typography color="text.secondary" gutterBottom>
-        Selections for comparisons
-      </Typography>
+      <div className="header">
+        <Typography className="title" color="text.secondary" gutterBottom>
+          Selections for comparisons
+        </Typography>
+        <IconButton color="secondary" aria-label="edit" size="small">
+          <EditIcon fontSize="small" />
+        </IconButton>
+      </div>
     </Paper>
   );
 }
