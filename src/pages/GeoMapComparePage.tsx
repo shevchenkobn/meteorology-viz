@@ -40,7 +40,8 @@ export function GeoMapComparePage() {
   const comparisonSelection = useSelector(selectComparisonSelection);
   const draftComparisonSelection = useSelector(selectComparisonDraftSelectionDelta);
   const editedComparisonOrder =
-    draftComparisonSelection.order.length === 0 ? draftComparisonSelection.order : comparisonSelection.order;
+    draftComparisonSelection.order.length !== 0 ? draftComparisonSelection.order : comparisonSelection.order;
+  console.log('selectiosn', editedComparisonOrder, draftComparisonSelection, comparisonSelection);
   const editedComparisonSelection = useMemo(
     () =>
       ({
@@ -95,10 +96,10 @@ export function GeoMapComparePage() {
           stations={stations}
           measurements={features.measurements}
           connections={features.connections}
-          produceResizeEvent={true}
+          produceResizeEvent
         />
       </div>
-      <div>
+      <div className="pb-07">
         <ComparisonSelectionsInput
           comparisonSelections={editedComparisonSelection}
           isEditing={isEditing}

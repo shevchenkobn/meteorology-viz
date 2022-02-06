@@ -22,12 +22,20 @@ body {
   margin-bottom: 1rem;
 }
 
+.pb-07 {
+  padding-bottom: .7rem;
+}
+
 .w-100 {
   width: 100%;
 }
 
 .flex {
   display: flex;
+
+  &.flex-items-center {
+    align-items: center;
+  }
 
   > .flex-grow {
     flex-grow: 1;

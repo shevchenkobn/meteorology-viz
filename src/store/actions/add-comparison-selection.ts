@@ -22,11 +22,12 @@ export const addComparisonSelectionCaseReducer: AppCaseReducer<AddComparisonSele
     state.comparison.lastSelectionId,
     (id) => !!state.comparison.selections.map[id] && !!state.comparison.draftSelectionsDelta.map[id]
   );
+  state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
   state.comparison.draftSelectionsDelta.map = { ...state.comparison.draftSelectionsDelta.map };
   state.comparison.draftSelectionsDelta.map[nextId] = dates.slice();
   state.comparison.draftSelectionsDelta.order = getOrder(state.comparison).slice();
   state.comparison.draftSelectionsDelta.order.push(nextId);
   state.comparison = { ...state.comparison };
   state.comparison.lastSelectionId = nextId;
-  return state;
+  return { ...state };
 };

@@ -1,11 +1,13 @@
 .ComparisonSelectionsInput {
   padding: 0.5rem;
 
-  .header {
-    display: flex;
-
-    .title {
-      flex-grow: 1;
+  .body {
+    > :not(:last-child) {
+      padding-bottom: 0.5rem;
     }
+  }
+
+  .selection-index {
+    margin-inline-end: 0.7rem;
   }
 }

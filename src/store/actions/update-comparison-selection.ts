@@ -24,5 +24,5 @@ export const updateComparisonSelectionCaseReducer: AppCaseReducer<UpdateComparis
     state.comparison.draftSelectionsDelta.order = state.comparison.selections.order;
   }
 
-  return state;
+  return { ...state };
 };

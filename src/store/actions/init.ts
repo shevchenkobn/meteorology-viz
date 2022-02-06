@@ -88,7 +88,7 @@ export function getInitialState(): RootState {
         map: {},
         order: [],
       },
-      lastSelectionId: 0,
+      lastSelectionId: -1,
       isEditing: false,
       measurements: fromEntries(iterate(objectKeys(stationMap)).map((s) => [s, {}])),
     },

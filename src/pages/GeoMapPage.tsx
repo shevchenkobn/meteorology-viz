@@ -44,7 +44,7 @@ export function GeoMapPage() {
           connections={features.connections}
           currentYear={parseMeasurementDate(position).year}
           countries={countries}
-          produceResizeEvent={true}
+          produceResizeEvent
         />
       </div>
       <div className="timeline-container">

@@ -1,0 +1,7 @@
+.ComparisonSelection {
+  &.readonly {
+    > :not(:last-child) {
+      margin-inline-end: .3rem;
+    }
+  }
+}

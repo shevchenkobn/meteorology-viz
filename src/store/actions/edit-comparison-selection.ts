@@ -12,5 +12,5 @@ export const editComparisonSelectionCaseReducer: AppCaseReducer<EditComparisonSe
   state.comparison = { ...state.comparison };
   state.comparison.isEditing = true;
 
-  return state;
+  return { ...state };
 };

@@ -34,5 +34,5 @@ export const applyComparisonSelectionCaseReducer: AppCaseReducer<ApplyComparison
   }
 
   doRestoreComparisonSelection(state);
-  return state;
+  return { ...state };
 };

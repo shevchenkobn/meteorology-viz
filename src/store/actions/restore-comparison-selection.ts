@@ -15,7 +15,7 @@ export function doRestoreComparisonSelection(state: RootState) {
   state.comparison = { ...state.comparison };
   state.comparison.isEditing = false;
 
-  return state;
+  return { ...state };
 }
 
 export const restoreComparisonSelectionCaseReducer: AppCaseReducer<RestoreComparisonSelection> =

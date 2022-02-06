@@ -23,5 +23,5 @@ export const setTimelinePositionCaseReducer: AppCaseReducer<SetTimelinePosition>
   }
   state.geoTimeline = { ...state.geoTimeline };
   state.geoTimeline.currentPosition = timelinePosition;
-  return state;
+  return { ...state };
 };
