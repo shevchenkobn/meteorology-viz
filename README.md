@@ -46,6 +46,7 @@ Both views are connected and have two-way data linking. The page is responsive, 
 
 ## FIXES:
 - `"react-error-overlay": "6.0.9"` in `package.json`: https://github.com/facebook/create-react-app/issues/11771;
+- `window` 'resize' event dispatch is the only way that makes sure VegaJS charts have proper size after initialization and radical window resize;
 
 ## TODO:
 - update gradient checkpoints with more precise limits (perhaps, adaptive) **OR** change temperature gradient;

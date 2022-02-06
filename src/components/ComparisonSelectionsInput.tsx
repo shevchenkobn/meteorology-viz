@@ -1,4 +1,5 @@
 import { Paper } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { DeepReadonlyArray } from '../lib/types';
 import { MeasurementDate } from '../models/measurement';
 import { ComparisonSelections } from '../store/lib';
@@ -18,7 +19,9 @@ export interface ComparisonSelectionsProps {
 export function ComparisonSelectionsInput(props: ComparisonSelectionsProps) {
   return (
     <Paper className="ComparisonSelectionsInput" elevation={1}>
-      filters
+      <Typography color="text.secondary" gutterBottom>
+        Selections for comparisons
+      </Typography>
     </Paper>
   );
 }

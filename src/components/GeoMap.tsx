@@ -6,6 +6,7 @@ import { useMemo, useRef } from 'react';
 import { View } from 'react-vega';
 import * as ReactVega from 'react-vega';
 import type { Spec } from 'vega';
+import { Point } from '../lib/dom';
 import { GeoJsonMeasurementConnection, GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
 import { cloneDeepCommonMeasurementProps, MeasurementDate, MultiMeasurement } from '../models/measurement';
 import { Station } from '../models/station';
@@ -24,6 +25,12 @@ export interface GeoMapProps extends DeepReadonly<SizeProps> {
    */
   readonly countries?: DeepReadonly<Record<string, string>>;
   readonly currentYear?: number;
+  /**
+   * **[CRUTCH]** The VegaJS might suck and resizing, so after the first render the second one might be required to make sure the resize is successful.
+   * Other programmatic are not working :'(
+   * @default false
+   */
+  readonly produceResizeEvent?: boolean;
 }
 
 type FormattedMeasurement = Omit<MultiMeasurement, 'dates'> & {
@@ -81,15 +88,16 @@ export function GeoMap(props: GeoMapProps) {
   }
 
   return (
-    <div ref={containerRef} className="GeoMap">
+    <div ref={containerRef} className="GeoMap" style={{ width: props.width, height: props.height }}>
       <Chart
+        style={{ width: props.width, height: props.height }}
         data={{
           [DataSetName.Stations]: props.stations,
           [DataSetName.Measurements]: measurements,
         }}
         onNewView={(view) => {
           viewRef.current = view;
-          rerenderView(viewRef.current);
+          rerenderView(viewRef.current, true);
         }}
       />
     </div>
@@ -98,26 +106,34 @@ export function GeoMap(props: GeoMapProps) {
   function setCurrentYear(view: View) {
     view.signal(Signal.CurrentYear, props.currentYear ?? null).run();
   }
-  function rerenderView(view: View) {
+  function rerenderView(view: View, firstRun = false) {
     setCurrentYear(view);
     if (props.countries) {
       view.signal(Signal.Countries, props.countries);
     }
     if (containerRef.current) {
-      const detailsNode = containerRef.current.querySelector('details > summary');
-      const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
-      const nonChartNodes = containerRef.current.querySelectorAll('.chart-wrapper > :not(.marks)');
-      const height = iterate(nonChartNodes).reduce(
-        (height, n) => height - (n as Element).getBoundingClientRect().height - 7,
-        props.height
-      );
-      view.width(width).height(height);
+      const { x, y } = getChartSize(containerRef.current);
+      view.width(x).height(y);
     }
     // required for actual dataset rerendering.
     view.data(DataSetName.Measurements, measurements);
     view.data(DataSetName.Stations, props.stations);
     view.data(DataSetName.Connections, props.connections || []);
-    view.run();
+    if (props.produceResizeEvent) {
+      view.runAsync().finally(() => window.dispatchEvent(new Event('resize')));
+    } else {
+      view.run();
+    }
+  }
+  function getChartSize(container: HTMLDivElement): Point {
+    const detailsNode = container.querySelector('details > summary');
+    const width = props.width - (detailsNode ? detailsNode.getBoundingClientRect().width : 0);
+    const nonChartNodes = container.querySelectorAll('.chart-wrapper > :not(.marks)');
+    const height = iterate(nonChartNodes).reduce(
+      (height, n) => height - (n as Element).getBoundingClientRect().height - 7,
+      props.height
+    );
+    return { x: width, y: height };
   }
 }
 

@@ -91,7 +91,12 @@ export function GeoMapComparePage() {
   return (
     <div className="grow-size GeoMapComparePage">
       <div className="map-container">
-        <GrowingGeoMap stations={stations} measurements={features.measurements} connections={features.connections} />
+        <GrowingGeoMap
+          stations={stations}
+          measurements={features.measurements}
+          connections={features.connections}
+          produceResizeEvent={true}
+        />
       </div>
       <div>
         <ComparisonSelectionsInput
