@@ -105,6 +105,7 @@ export function ComparisonSelectionsInput({
                   placeholder="New Selection"
                 />
               )}
+              value={newSelectionDates}
               options={dates}
               onChange={(event, values) => setNewSelectionDates(values)}
             />
@@ -112,7 +113,10 @@ export function ComparisonSelectionsInput({
               color="secondary"
               size="large"
               disabled={newSelectionDates.length === 0}
-              onClick={() => onComparisonSelectionAdd(newSelectionDates)}
+              onClick={() => {
+                onComparisonSelectionAdd(newSelectionDates);
+                setNewSelectionDates([]);
+              }}
             >
               <AddIcon />
             </IconButton>

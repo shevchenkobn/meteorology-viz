@@ -11,6 +11,8 @@ export const editComparisonSelection = createAction<void, ActionType.EditCompari
 export const editComparisonSelectionCaseReducer: AppCaseReducer<EditComparisonSelection> = (state: RootState) => {
   state.comparison = { ...state.comparison };
   state.comparison.isEditing = true;
+  state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
+  state.comparison.draftSelectionsDelta.order = state.comparison.selections.order;
 
   return { ...state };
 };

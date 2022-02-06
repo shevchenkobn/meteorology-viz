@@ -20,6 +20,8 @@ export const removeComparisonSelectionCaseReducer: AppCaseReducer<RemoveComparis
   state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
   state.comparison.draftSelectionsDelta.map = { ...state.comparison.draftSelectionsDelta.map };
   delete state.comparison.draftSelectionsDelta.map[comparisonSelectionId];
-  state.comparison.draftSelectionsDelta.order = getOrder(state.comparison).filter((id) => id !== comparisonSelectionId);
+  state.comparison.draftSelectionsDelta.order = state.comparison.draftSelectionsDelta.order.filter(
+    (id) => id !== comparisonSelectionId
+  );
   return { ...state };
 };

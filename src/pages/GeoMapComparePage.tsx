@@ -39,8 +39,7 @@ export function GeoMapComparePage() {
   const isEditing = useSelector(selectComparisonIsEditing);
   const comparisonSelection = useSelector(selectComparisonSelection);
   const draftComparisonSelection = useSelector(selectComparisonDraftSelectionDelta);
-  const editedComparisonOrder =
-    draftComparisonSelection.order.length !== 0 ? draftComparisonSelection.order : comparisonSelection.order;
+  const editedComparisonOrder = isEditing ? draftComparisonSelection.order : comparisonSelection.order;
   const editedComparisonSelection = useMemo(
     () =>
       ({

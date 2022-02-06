@@ -2,7 +2,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { MeasurementDate } from '../../models/measurement';
 import { ActionType } from '../lib';
 import { AppCaseReducer } from '../reducers';
-import { getNextId, getOrder } from './lib/comparison';
+import { getNextId } from './lib/comparison';
 
 export interface NewComparisonSelection {
   readonly dates: ReadonlyArray<MeasurementDate>;
@@ -25,7 +25,7 @@ export const addComparisonSelectionCaseReducer: AppCaseReducer<AddComparisonSele
   state.comparison.draftSelectionsDelta = { ...state.comparison.draftSelectionsDelta };
   state.comparison.draftSelectionsDelta.map = { ...state.comparison.draftSelectionsDelta.map };
   state.comparison.draftSelectionsDelta.map[nextId] = dates.slice();
-  state.comparison.draftSelectionsDelta.order = getOrder(state.comparison).slice();
+  state.comparison.draftSelectionsDelta.order = state.comparison.draftSelectionsDelta.order.slice();
   state.comparison.draftSelectionsDelta.order.push(nextId);
   state.comparison = { ...state.comparison };
   state.comparison.lastSelectionId = nextId;
