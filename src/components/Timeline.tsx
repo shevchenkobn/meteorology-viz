@@ -4,13 +4,12 @@ import './Timeline.scss';
 import { iterate } from 'iterare';
 import { debounce } from 'lodash-es';
 import React, { useMemo } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { distinctUntilChanged, map } from 'rxjs';
 import { GuardedMap } from '../lib/map';
-import { asEffectReset } from '../lib/rx';
+import { Optional } from '../lib/types';
 import { getDate, isMeasurementDate, MeasurementDate, parseMeasurementDate } from '../models/measurement';
-import { useRxAppStore } from '../store';
+import { useAppDispatch } from '../store';
 import { geoTimelineStepIntervalMs } from '../store/actions/init';
 import { setTimelinePlaying } from '../store/actions/set-timeline-playing';
 import { selectGeoDatesWithMeasurements, selectGeoTimelineIsPlaying, selectMeasurementsLimits } from '../store/lib';
@@ -20,31 +19,31 @@ import PauseIcon from '@mui/icons-material/Pause';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 export interface TimelineProps {
-  date: MeasurementDate;
+  readonly date: MeasurementDate;
   onDateChange(newValue: MeasurementDate): void;
 }
 
 export function Timeline({ date, onDateChange }: TimelineProps) {
   const isPlaying = useSelector(selectGeoTimelineIsPlaying);
-  const { state$, store } = useRxAppStore();
+  const dispatch = useAppDispatch();
   const handleDateChange: typeof onDateChange = useMemo(
-    () =>
-      debounce((value) => {
-        if (isPlaying) {
-          store.dispatch(setTimelinePlaying({ isPlaying: false }));
-        }
-        onDateChange(value);
-      }, 10),
-    [isPlaying, onDateChange, store]
-  ); // debounce(onDateChange, 5)
-  const handleSliderChange: React.ComponentProps<typeof Slider>['onChange'] = useCallback(
-    (event: Event, newValue: number | number[]) => {
-      if (typeof newValue === 'number') {
-        handleDateChange(numberToMeasurementDate(newValue));
-      } else {
-        console.warn('Unknown timeline slider value:', newValue);
+    () => (value) => {
+      if (isPlaying) {
+        dispatch(setTimelinePlaying({ isPlaying: false }));
       }
+      onDateChange(value);
     },
+    [isPlaying, onDateChange, dispatch]
+  );
+  const handleSliderChange: React.ComponentProps<typeof Slider>['onChange'] = useMemo(
+    () =>
+      debounce((event: Event, newValue: number | number[]) => {
+        if (typeof newValue === 'number') {
+          handleDateChange(numberToMeasurementDate(newValue));
+        } else {
+          console.warn('Unknown timeline slider value:', newValue);
+        }
+      }, 10),
     [handleDateChange]
   );
   const handleInputChange: React.ComponentProps<typeof Autocomplete>['onChange'] = useCallback(
@@ -57,11 +56,7 @@ export function Timeline({ date, onDateChange }: TimelineProps) {
     },
     [handleDateChange]
   );
-  const [{ min, max }, setLimits] = useState(selectMeasurementsLimits(store.getState()));
-  useEffect(
-    () => asEffectReset(state$.pipe(map(selectMeasurementsLimits), distinctUntilChanged()).subscribe(setLimits)),
-    [state$]
-  );
+  const { min, max } = useSelector(selectMeasurementsLimits);
   const timelineDates = useSelector(selectGeoDatesWithMeasurements);
   const validSliderMarks: Mark[] = useMemo(
     () => timelineDates.map((v) => ({ value: measurementDateToNumber(v), label: null })),
@@ -73,29 +68,39 @@ export function Timeline({ date, onDateChange }: TimelineProps) {
   );
 
   const step = useCallback(
-    (date: MeasurementDate, offset: number) => timelineDates[dateIndexes.get(date) + offset],
+    (date: MeasurementDate, offset: number) =>
+      timelineDates[dateIndexes.get(date) + offset] as Optional<MeasurementDate>,
     [timelineDates, dateIndexes]
   );
   useEffect(() => {
     if (isPlaying) {
       const timeout = setTimeout(() => {
-        onDateChange(step(date, 1));
+        const nextDate = step(date, 1);
+        if (typeof nextDate !== 'string') {
+          dispatch(setTimelinePlaying({ isPlaying: false }));
+          return;
+        }
+        onDateChange(nextDate);
       }, geoTimelineStepIntervalMs);
       return () => clearTimeout(timeout);
     }
-  }, [date, isPlaying, onDateChange, step]);
+  }, [date, dispatch, isPlaying, onDateChange, step]);
   const handlePlay = useCallback(() => {
-    store.dispatch(setTimelinePlaying({ isPlaying: !isPlaying }));
-  }, [store, isPlaying]);
+    dispatch(setTimelinePlaying({ isPlaying: !isPlaying }));
+  }, [dispatch, isPlaying]);
 
   const handleStep = useCallback(
     (offset: number) => {
       if (isPlaying) {
-        store.dispatch(setTimelinePlaying({ isPlaying: false }));
+        dispatch(setTimelinePlaying({ isPlaying: false }));
       }
-      onDateChange(step(date, offset));
+      const nextDate = step(date, offset);
+      if (typeof nextDate !== 'string') {
+        return;
+      }
+      onDateChange(nextDate);
     },
-    [isPlaying, onDateChange, step, date, store]
+    [isPlaying, onDateChange, step, date, dispatch]
   );
 
   return (

@@ -226,11 +226,11 @@ function createChart(theme: Theme) {
         {
           name: 'scale',
           value: 2030,
-          bind: { name: 'Scale', input: 'range', min: 0, max: 10000, step: 1 },
+          bind: { name: 'Scale', input: 'range', min: 0, max: 20000, step: 1 },
           on: [
             {
               events: { type: 'wheel', consume: true },
-              update: 'clamp(scale * pow(1.002, -event.deltaY * pow(16, event.deltaMode)), 150, 10000)',
+              update: 'clamp(scale * pow(1.002, -event.deltaY * pow(16, event.deltaMode)), 150, 20000)',
             },
           ],
         },
@@ -535,7 +535,6 @@ function createChart(theme: Theme) {
             },
             update: {
               strokeWidth: { value: 3 },
-              // stroke: { value: theme.palette.primary.main },
               stroke: {
                 signal: `!isNumber(currentYear) || (currentYear >= datum.properties.station.yearFirst && currentYear <= datum.properties.station.yearLast) ? scale('elevation', datum.properties.station.elevation) : '${theme.palette.primary.main}'`,
               },

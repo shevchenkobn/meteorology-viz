@@ -49,25 +49,23 @@ Both views are connected and have two-way data linking. The page is responsive, 
 - `window` 'resize' event dispatch is the only way that makes sure VegaJS charts have proper size after initialization and radical window resize;
 
 ## TODO:
-- update gradient checkpoints with more precise limits (perhaps, adaptive) **OR** change temperature gradient;
+- [maybe] update gradient checkpoints with more precise limits (perhaps, adaptive) **OR** change temperature gradient;
 - Local Storage cache overflow.
 - global average (where? near legend? bottom?)
 - timeline with global average
-- Understand if { ...state } is required in all actions
 - TopoJSON to country code (by updating ID of TopoJSON points):
   - hover country border
   - bg country border
+- fix issue with tooltip update when autoplaying the timeline
 
 ## PLAN:
-- fix issue with tooltip update when autoplaying the timeline
-- apply date format everywhere
 - comparison selection inputs
-  - select or autocomplete
   - select by entire years
   - select by entire seasons
   - select by months for all years
 - timeline:
   - add step configuration
   - add speed configuration
+- apply date format everywhere
 - move timeline logic to the `GeoMapPage` component.
 - TODOs
