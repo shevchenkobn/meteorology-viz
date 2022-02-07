@@ -59,6 +59,8 @@ Both views are connected and have two-way data linking. The page is responsive, 
   - bg country border
 
 ## PLAN:
+- fix issue with tooltip update when autoplaying the timeline
+- apply date format everywhere
 - comparison selection inputs
   - select or autocomplete
   - select by entire years

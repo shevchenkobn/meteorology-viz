@@ -24,14 +24,12 @@ export function ComparisonSelection({
   className = '',
 }: ComparisonSelectionProps) {
   return datesOptions ? (
-    <div className={'ComparisonSelection flex ' + className}>
+    <div className={'ComparisonSelection flex editable ' + className}>
       <Autocomplete
         multiple
         className="flex-grow"
         disableCloseOnSelect={true}
-        disableClearable={true}
         size="small"
-        filterSelectedOptions
         renderInput={(params) => (
           <TextField {...params} variant="filled" label="Edit Selection" placeholder="Edit Selection" />
         )}
@@ -40,15 +38,19 @@ export function ComparisonSelection({
         onChange={(event, values) => {
           if (values.length !== 0) {
             onUpdate(values);
+          } else if (dates.length - values.length > 1) {
+            onUpdate(dates.slice(0, 1));
           }
         }}
       />
-      <IconButton color="primary" size="large" onClick={() => onDelete()}>
-        <DeleteOutlineIcon />
-      </IconButton>
+      <div className="flex flex-items-center">
+        <IconButton color="primary" size="large" onClick={() => onDelete()}>
+          <DeleteOutlineIcon />
+        </IconButton>
+      </div>
     </div>
   ) : (
-    <div className={'ComparisonSelection flex readonly' + className}>
+    <div className={'ComparisonSelection flex flex-wrap readonly' + className}>
       {dates.map((date) => (
         <Chip key={date} label={date} color="primary" variant="outlined" />
       ))}

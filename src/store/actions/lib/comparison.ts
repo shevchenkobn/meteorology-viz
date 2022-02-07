@@ -44,6 +44,7 @@ export function calculateAverageByStation(
       const average = averageByStation.get(station);
       average.value = (average.value * average.count + temperature) / (average.count + 1);
       average.observations += observations;
+      average.count += 1;
     }
   }
   return averageByStation;
@@ -62,7 +63,7 @@ export function setAverageMeasurements(
       dates: dates.slice(),
       nonEmptyDates: average.count,
       temperature: average.count > 0 ? average.value : Number.NaN,
-      observations: average.observations,
+      observations: average.observations / average.count,
     };
   }
 }

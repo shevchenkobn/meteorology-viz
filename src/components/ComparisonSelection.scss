@@ -1,7 +1,6 @@
 .ComparisonSelection {
   &.readonly {
-    > :not(:last-child) {
-      margin-inline-end: .3rem;
-    }
+    row-gap: .2rem;
+    column-gap: .3rem;
   }
 }

@@ -37,6 +37,10 @@ body {
     align-items: center;
   }
 
+  &.flex-wrap {
+    flex-wrap: wrap;
+  }
+
   > .flex-grow {
     flex-grow: 1;
   }

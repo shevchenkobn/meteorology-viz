@@ -41,7 +41,14 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 }
 
 const argv = process.argv.slice(2);
+
 const writeStatsJson = argv.indexOf('--stats') !== -1;
+function getBuildStatsPath() {
+  return paths.appBuild + '/bundle-stats.json';
+}
+if (writeStatsJson) {
+  console.log('Build stats were requested. Report file location: ' + getBuildStatsPath());
+}
 
 // Generate configuration
 const config = configFactory('production');
@@ -172,7 +179,7 @@ function build(previousFileSizes) {
 
       if (writeStatsJson) {
         return bfj
-          .write(paths.appBuild + '/bundle-stats.json', stats.toJson())
+          .write(getBuildStatsPath(), stats.toJson())
           .then(() => resolve(resolveArgs))
           .catch((error) => reject(new Error(error)));
       }

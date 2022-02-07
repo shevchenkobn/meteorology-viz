@@ -53,38 +53,33 @@ export function GeoMapComparePage() {
       } as ComparisonSelections),
     [comparisonSelection.map, draftComparisonSelection.map, editedComparisonOrder]
   );
-  console.log('redner', 'c', editedComparisonSelection, 'd', draftComparisonSelection, 'r', comparisonSelection);
 
   const features = useMemo(
     () =>
-      iterate(objectEntries(comparisonMeasurements))
-        .map(([station, measurementMap]) =>
-          toGeoJsonMeasurementFeatures(
-            [
-              {
-                station: stationMap[station],
-                measurements: comparisonSelection.order.map((id) => {
-                  const measurement = cloneDeepMultiMeasurement(measurementMap[id]) as MeasurementWithDatesId;
-                  measurement.datesId = '_' + id.toString();
-                  return measurement;
-                }),
-              },
-            ],
-            (m) => m.datesId
-          )
+      iterate(
+        toGeoJsonMeasurementFeatures(
+          iterate(objectEntries(comparisonMeasurements))
+            .map(([station, measurementMap]) => ({
+              station: stationMap[station],
+              measurements: comparisonSelection.order.map((id, index) => {
+                const measurement = cloneDeepMultiMeasurement(measurementMap[id]) as MeasurementWithDatesId;
+                measurement.datesId = (index + 1).toString();
+                return measurement;
+              }),
+            }))
+            .filter(({ measurements }) => measurements.some((m) => !Number.isNaN(m.temperature)))
         )
-        .flatten()
-        .reduce(
-          (o, { feature, connection }) => {
-            o.measurements.push(feature);
-            o.connections.push(connection);
-            return o;
-          },
-          { measurements: [], connections: [] } as GeoJsonMeasurementFeatures<
-            DeepReadonly<MultiMeasurement>,
-            DeepReadonly<Station>
-          >
-        ),
+      ).reduce(
+        (o, { feature, connection }) => {
+          o.measurements.push(feature);
+          o.connections.push(connection);
+          return o;
+        },
+        { measurements: [], connections: [] } as GeoJsonMeasurementFeatures<
+          DeepReadonly<MultiMeasurement>,
+          DeepReadonly<Station>
+        >
+      ),
     [comparisonMeasurements, comparisonSelection.order, stationMap]
   );
 

@@ -12,7 +12,7 @@ export interface CsvParseConfig<T = Record<string, any>> {
 export function parseCsv<T = Record<string, any>>(csvText: string, config?: CsvParseConfig<T>): ParseResult<T> {
   const parseConfig: Parameters<typeof parse>[1] = {
     header: true,
-    transformHeader(value: string, index: number): string {
+    transformHeader(value: string): string {
       return camelcase(value);
     },
     skipEmptyLines: true,

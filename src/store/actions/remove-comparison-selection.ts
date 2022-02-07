@@ -1,7 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ActionType } from '../lib';
 import { AppCaseReducer } from '../reducers';
-import { getOrder } from './lib/comparison';
 
 export interface ComparisonSelection {
   readonly comparisonSelectionId: number;

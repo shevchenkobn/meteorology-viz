@@ -8,7 +8,7 @@ import * as ReactVega from 'react-vega';
 import type { Spec } from 'vega';
 import { Point } from '../lib/dom';
 import { GeoJsonMeasurementConnection, GeoJsonMeasurementFeature, GeoJsonStationFeature } from '../models/geo-json';
-import { cloneDeepCommonMeasurementProps, MeasurementDate, MultiMeasurement } from '../models/measurement';
+import { cloneDeepMultiMeasurement, MeasurementDate, MultiMeasurement } from '../models/measurement';
 import { Station } from '../models/station';
 import { withGrowSize } from './with-grow-size';
 import topoJsonData from '../data/europe.topo.json';
@@ -63,7 +63,7 @@ export function GeoMap(props: GeoMapProps) {
   const measurements = useMemo(
     () =>
       props.measurements.map((f) => {
-        const measurement = cloneDeepCommonMeasurementProps(f.properties.measurement) as FormattedMeasurement;
+        const measurement = cloneDeepMultiMeasurement(f.properties.measurement) as FormattedMeasurement;
         measurement.dates = f.properties.measurement.dates.map(formatDate);
         const newFeature: MeasurementFeature = {
           type: f.type,
@@ -204,7 +204,7 @@ function createChart(theme: Theme) {
           on: [
             {
               events: { signal: 'delta' },
-              update: 'clamp(angles[1] + delta[1], -60, 60)',
+              update: 'clamp(angles[1] + delta[1], 34.6, 80)',
             },
           ],
         },
@@ -479,7 +479,7 @@ function createChart(theme: Theme) {
                 signal:
                   '{' +
                   'title: datum.properties.station.station + " - station", ' +
-                  '"Status": currentYear < datum.properties.station.yearFirst ? "Not Yet Open" : currentYear > datum.properties.station.yearLast ? "Already Closed" : "Active", ' +
+                  '"Status": !isNumber(currentYear) ? "n/a" : currentYear < datum.properties.station.yearFirst ? "Not Yet Open" : currentYear > datum.properties.station.yearLast ? "Already Closed" : "Active", ' +
                   '"Name": datum.properties.station.name, ' +
                   '"Latitude": datum.properties.station.latitude + " °", ' +
                   '"Longitude": datum.properties.station.longitude + " °", ' +
@@ -520,10 +520,10 @@ function createChart(theme: Theme) {
               tooltip: {
                 signal:
                   '{' +
-                  'title: datum.properties.measurement.temperature + " °C, " + join(datum.properties.measurement.dates, "; ") + ", " + datum.properties.station.station, ' +
-                  '"Temperature": datum.properties.measurement.temperature + " °C", ' +
+                  'title: format(datum.properties.measurement.temperature, ".2~f") + " °C, " + (isString(datum.properties.measurement.datesId) ? "selection #" + datum.properties.measurement.datesId : join(datum.properties.measurement.dates, "; ")) + ", " + datum.properties.station.station, ' +
+                  '"Temperature": format(datum.properties.measurement.temperature, ".2~f") + " °C", ' +
                   '"Dates": join(datum.properties.measurement.dates, ", "), ' +
-                  '"Observations": datum.properties.measurement.observations, ' +
+                  '"Average Observations": format(datum.properties.measurement.observations, ".2~f"), ' +
                   '"Station": datum.properties.station.station, ' +
                   '"Station Name": datum.properties.station.name, ' +
                   '"Latitude": datum.properties.station.latitude + " °", ' +
@@ -556,5 +556,5 @@ function createChart(theme: Theme) {
 }
 
 function formatDate(date: MeasurementDate) {
-  return dayjs(date).format('MMM (MM) YYYY');
+  return dayjs(date).format('YYYY-MM (MMM)');
 }

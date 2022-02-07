@@ -48,7 +48,7 @@ export function Timeline({ date, onDateChange }: TimelineProps) {
     [handleDateChange]
   );
   const handleInputChange: React.ComponentProps<typeof Autocomplete>['onChange'] = useCallback(
-    (event, newValue, index) => {
+    (event, newValue) => {
       if (isMeasurementDate(newValue)) {
         handleDateChange(newValue);
       } else {

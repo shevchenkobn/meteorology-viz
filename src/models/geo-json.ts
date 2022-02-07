@@ -1,6 +1,6 @@
 import { Feature, LineString, Point as GeoJsonPoint } from 'geojson';
 import { Point } from '../lib/dom';
-import { cast, DeepReadonly, Optional } from '../lib/types';
+import { cast, DeepReadonly } from '../lib/types';
 import { getMeasurementId, MultiMeasurement } from './measurement';
 import { Station } from './station';
 
@@ -32,8 +32,7 @@ export function* toGeoJsonMeasurementFeatures<
   M extends DeepReadonly<MultiMeasurement>,
   S extends DeepReadonly<Station>
 >(
-  stationsWithMeasurements: Iterable<DeepReadonly<StationWithMeasurements<M, S>>>,
-  getDatesId: (measurement: M) => Optional<string> = () => undefined
+  stationsWithMeasurements: Iterable<DeepReadonly<StationWithMeasurements<M, S>>>
 ): Generator<GeoJsonMeasurementFeaturePair<M, S>> {
   for (const d of stationsWithMeasurements) {
     const xFullOffset =
@@ -52,8 +51,8 @@ export function* toGeoJsonMeasurementFeatures<
         y: measurementYOffsetDegree,
       };
       yield {
-        feature: toGeoJsonMeasurementFeature(m, getStation, offset, getDatesId(m)),
-        connection: toGeoJsonMeasurementConnection(m, getStation, offset, getDatesId(m)),
+        feature: toGeoJsonMeasurementFeature(m, getStation, offset),
+        connection: toGeoJsonMeasurementConnection(m, getStation, offset),
       };
     }
   }
@@ -80,13 +79,12 @@ export interface GeoJsonStationProperties<S extends DeepReadonly<Station> = Stat
 export function toGeoJsonMeasurementFeature<M extends DeepReadonly<MultiMeasurement>, S extends DeepReadonly<Station>>(
   measurement: M,
   getStation: (station: string) => S,
-  coordinateOffset: DeepReadonly<Point>,
-  datesId?: string
+  coordinateOffset: DeepReadonly<Point>
 ): GeoJsonMeasurementFeature<M, S> {
   const station = getStation(measurement.station);
   return {
     type: 'Feature',
-    id: getGeoJsonMeasurementId(measurement, datesId),
+    id: getGeoJsonMeasurementId(measurement),
     geometry: {
       type: 'Point',
       coordinates: [station.longitude + coordinateOffset.x, station.latitude + coordinateOffset.y, station.elevation],
@@ -104,13 +102,12 @@ export function toGeoJsonMeasurementConnection<
 >(
   measurement: M,
   getStation: (station: string) => S,
-  coordinateOffset: DeepReadonly<Point>,
-  datesId?: string
+  coordinateOffset: DeepReadonly<Point>
 ): GeoJsonMeasurementConnection<M, S> {
   const station = getStation(measurement.station);
   return {
     type: 'Feature',
-    id: getGeoJsonConnectionId(measurement, datesId),
+    id: getGeoJsonConnectionId(measurement),
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -151,9 +148,9 @@ export const idPrefixDelimiter = ':';
 export function getGeoJsonStationId(station: DeepReadonly<Station>) {
   return stationIdPrefix + idPrefixDelimiter + station.station;
 }
-export function getGeoJsonConnectionId(measurement: DeepReadonly<MultiMeasurement>, datesId?: string) {
-  return connectionIdPrefix + idPrefixDelimiter + getMeasurementId(measurement, datesId);
+export function getGeoJsonConnectionId(measurement: DeepReadonly<MultiMeasurement>) {
+  return connectionIdPrefix + idPrefixDelimiter + getMeasurementId(measurement);
 }
-export function getGeoJsonMeasurementId(measurement: DeepReadonly<MultiMeasurement>, datesId?: string) {
-  return measurementIdPrefix + idPrefixDelimiter + getMeasurementId(measurement, datesId);
+export function getGeoJsonMeasurementId(measurement: DeepReadonly<MultiMeasurement>) {
+  return measurementIdPrefix + idPrefixDelimiter + getMeasurementId(measurement);
 }

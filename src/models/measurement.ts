@@ -23,6 +23,7 @@ export interface Measurement extends MeasurementDateObject, CommonMeasurementPro
 
 export interface MultiMeasurement extends CommonMeasurementProps {
   dates: MeasurementDate[];
+  datesId?: string;
   nonEmptyDates: number;
 }
 
@@ -37,13 +38,19 @@ export function cloneDeepMultiMeasurement(measurement: DeepReadonly<MultiMeasure
   const newMeasurement = cloneDeepCommonMeasurementProps(measurement) as MultiMeasurement;
   newMeasurement.dates = measurement.dates.slice();
   newMeasurement.nonEmptyDates = measurement.nonEmptyDates;
+  if ('datesId' in measurement) {
+    newMeasurement.datesId = measurement.datesId;
+  }
   return newMeasurement;
 }
 
-export function getMeasurementId(measurement: DeepReadonly<MultiMeasurement>, datesId?: string) {
-  if (typeof datesId !== 'string') {
+export function getMeasurementId(measurement: DeepReadonly<MultiMeasurement>) {
+  let datesId: string;
+  if (typeof measurement.datesId !== 'string') {
     const sorted = measurement.dates.slice().sort();
     datesId = sorted.join(';');
+  } else {
+    datesId = measurement.datesId;
   }
   return `${measurement.station}_${datesId}`;
 }

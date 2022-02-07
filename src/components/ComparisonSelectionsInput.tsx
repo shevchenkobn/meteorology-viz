@@ -1,4 +1,4 @@
-import { Autocomplete, IconButton, Paper, TextField } from '@mui/material';
+import { Autocomplete, Divider, IconButton, Paper, Stack, TextField } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
@@ -60,16 +60,14 @@ export function ComparisonSelectionsInput({
           </IconButton>
         )}
       </div>
-      <div className="body">
-        {comparisonSelections.order.length === 0 ? (
-          !isEditing && (
-            <Typography variant="h6" gutterBottom>
-              No selections.
-            </Typography>
-          )
-        ) : (
-          <>
-            {comparisonSelections.order.map((id, i) => (
+      <Stack divider={<Divider />} spacing={'.4rem'}>
+        {comparisonSelections.order.length === 0
+          ? !isEditing && (
+              <Typography variant="h6" gutterBottom>
+                No selections.
+              </Typography>
+            )
+          : comparisonSelections.order.map((id, i) => (
               <div key={id} className="flex flex-items-center">
                 <Chip
                   className="selection-index"
@@ -87,8 +85,6 @@ export function ComparisonSelectionsInput({
                 </div>
               </div>
             ))}
-          </>
-        )}
         {isEditing && (
           <div className="flex">
             <Autocomplete
@@ -109,20 +105,22 @@ export function ComparisonSelectionsInput({
               options={dates}
               onChange={(event, values) => setNewSelectionDates(values)}
             />
-            <IconButton
-              color="secondary"
-              size="large"
-              disabled={newSelectionDates.length === 0}
-              onClick={() => {
-                onComparisonSelectionAdd(newSelectionDates);
-                setNewSelectionDates([]);
-              }}
-            >
-              <AddIcon />
-            </IconButton>
+            <div className="flex flex-items-center">
+              <IconButton
+                color="secondary"
+                size="large"
+                disabled={newSelectionDates.length === 0}
+                onClick={() => {
+                  onComparisonSelectionAdd(newSelectionDates);
+                  setNewSelectionDates([]);
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </div>
           </div>
         )}
-      </div>
+      </Stack>
     </Paper>
   );
 }
