@@ -59,13 +59,14 @@ Both views are connected and have two-way data linking. The page is responsive, 
 - fix issue with tooltip update when autoplaying the timeline
 
 ## PLAN:
-- comparison selection inputs
+- comparison selection inputs (use autocopmlete with groups and apply with `import PublishIcon from '@mui/icons-material/Publish';` and update with `import RefreshIcon from '@mui/icons-material/Refresh';`)
   - select by entire years
-  - select by entire seasons
+  - select by entire seasons - separate component (for timeline)
   - select by months for all years
 - timeline:
   - add step configuration
   - add speed configuration
+- dialog with details measurement
 - apply date format everywhere
 - move timeline logic to the `GeoMapPage` component.
 - TODOs
