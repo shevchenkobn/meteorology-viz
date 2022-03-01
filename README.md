@@ -33,6 +33,16 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
+## TODO:
+- [maybe] update gradient checkpoints with more precise limits (perhaps, adaptive) **OR** change temperature gradient;
+- Local Storage cache overflow.
+- global average (where? near legend? bottom?)
+- timeline with global average
+- TopoJSON to country code (by updating ID of TopoJSON points):
+  - hover country border
+  - bg country border
+- fix issue with tooltip update when autoplaying the timeline
+
 ## PLAN:
 - comparison selection inputs (use autocopmlete with groups and apply with `import PublishIcon from '@mui/icons-material/Publish';` and update with `import RefreshIcon from '@mui/icons-material/Refresh';`)
   - select by entire years
